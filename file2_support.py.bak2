@@ -22,9 +22,7 @@ except ImportError:
 
 def set_Tk_var():
     global combobox
-    global combobox1
     combobox = tk.StringVar()
-    combobox1 = tk.StringVar()
 
 def init(top, gui, *args, **kwargs):
     global w, top_level, root
