@@ -1,0 +1,23 @@
+use psv
+db.createUser(
+  {
+    user: "psv",
+    pwd: "psv",
+    roles: [      
+       { role: "readWrite", db: "psv" }	
+    ]
+  }
+)
+
+
+//E:\MongoDB\bin
+
+mongod.cfg
+
+
+security:
+  authorization: disabled
+
+  restart service
+
+  

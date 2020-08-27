@@ -1,6 +1,14 @@
 
-# updateUIAttributes(top, root) -- create_Toplevel1
+# updateUIAttributes(top, root) -- vp_start_gui
 # from actions import *
+
+import psv_support
+from additem import *
+from print import openprint
+from tkinter import messagebox 
+from mongoengine import *
+from mongoengine.context_managers import switch_collection
+from db import *
 
 def focus_next_widget(event,obj):
     obj.focus()
@@ -17,15 +25,13 @@ def widget_return(event, obj):
     # frmbill.btnfind.invoke()
     # return("break")
 
-def add_return(event, obj):
-    print("test")
+def add_return(event, obj):    
     additem()
 
 def find_return(event, obj):
     findbill()
 
 def numberonly(event, obj):   
-   
 
     if event.keycode ==8 or event.keycode== 46:
         return True
@@ -37,11 +43,90 @@ def numberonly(event, obj):
         return("break")
 
 
-def updateUIAttributes(top, root):
-    print("test")
+def numbers1 (event, obj):
+    v = event.char
+    
+    try:
+        v = int(v)
+
+        # val=int(obj.get('1.0','end-1c'))
+        # frmbill.txttotal.configure(text='test1')
+
+    except ValueError:
+        if v!="\x08" and v!="":
+            return "break"
+
+def floatonly (event, obj):
+    v = event.char    
+    try:
+
+        # if obj.get('1.0','end-1c').count('.') > 1:
+        #     return "break"
+
+        if v==".":
+            return True
+        v = float(v)
+    except ValueError:
+        if v!="\x08" and v!="":
+            return "break"
+
+def floatonly1 (event, obj):
+    v = event.char
+    val=obj.get('1.0','end-1c')
+    print(val)
+    #print(validate(obj.get('1.0','end-1c')))
+
+    try:
+        v = float(val)
+        if len(val) >0:
+            print("v is : ")
+            print(v)
+            return("break")
+        else:
+            return True
+    except ValueError:
+        #if v!="\x08" and v!="":
+        return("break")
+
+
+def check(event):
+    text = event.widget.get()
+    print('text:', text)
+
+    parts = text.split('.')
+    parts_number = len(parts)
+
+    if parts_number > 2:
+        print('too much dots')
+
+    if parts_number > 1 and parts[1]: # don't check empty string
+        if not parts[1].isdecimal() or len(parts[1]) > 2:
+            print('wrong second part')
+
+    if parts_number > 0 and parts[0]: # don't check empty string
+        if not parts[0].isdecimal() or len(parts[0]) > 8:
+            print('wrong first part')
+
+def validate(string):
+    regex = re.compile(r"(\+|\-)?[0-9,]*$")
+    result = regex.match(string)
+    return (string == ""
+            or (string.count('+') <= 1
+                and string.count('-') <= 1
+                and string.count(',') <= 1
+                and result is not None
+                and result.group(0) != ""))
+    
+def on_validate(P):
+    return validate(P)    
+
+def updateUIAttributes(top, root):  
     global frmbill
     frmbill=top
     frmbill.btnadditem.configure(command=additem)
+    frmbill.btnclear.configure(command=clearitem)
+    frmbill.btnsave.configure(command=saveitem)
+       
 
     frmbill.btnfind.configure(command=findbill)   
     frmbill.btnfind.bind('<Return>', lambda event, obj=frmbill.btnfind: find_return(event,obj))
@@ -54,17 +139,28 @@ def updateUIAttributes(top, root):
     frmbill.txtvehicleno.bind("<Tab>", lambda event, obj=frmbill.txtmobileno: focus_next_widget(event, obj))
     frmbill.txtmobileno.bind("<Tab>", lambda event, obj=frmbill.btnfind: focus_next_widget(event, obj)) 
 
+    frmbill.txtbillno.configure(text='')
+
+    frmbill.txtcustomerno.bind("<Tab>", lambda event, obj=frmbill.txtaddress: focus_next_widget(event, obj))
+    frmbill.txtaddress.bind("<Tab>", lambda event, obj=frmbill.txtvehicleinfo: focus_next_widget(event, obj))
+    frmbill.txtvehicleinfo.bind("<Tab>", lambda event, obj=frmbill.cboitemname: focus_next_widget(event, obj))
+
     frmbill.txtcustomerno.bind("<Return>", lambda event, obj=frmbill.txtcustomerno: widget_return(event,obj))
 
-            
+    frmbill.lblitemslno['text']=""
     frmbill.cboitemname.bind("<Return>", lambda event, obj=frmbill.cboitemname: widget_return(event,obj))
     frmbill.cboitemname.bind("<Tab>", lambda event, obj=frmbill.cbouom: focus_next_widget(event, obj)) 
 
     frmbill.cbouom.bind("<Return>", lambda event, obj=frmbill.cbouom: widget_return(event,obj))
     frmbill.cbouom.bind("<Tab>", lambda event, obj=frmbill.txtqty: focus_next_widget(event, obj)) 
+    frmbill.cbouom.configure(textvariable=psv_support.combobox1)
+
 
     frmbill.txtqty.bind("<Return>", lambda event, obj=frmbill.txtqty: widget_return(event,obj))
-    frmbill.txtqty.bind("<Tab>", lambda event, obj=frmbill.txtprice: focus_next_widget(event, obj)) 
+    frmbill.txtqty.bind("<Tab>", lambda event, obj=frmbill.txtprice: focus_next_widget(event, obj))
+   
+    frmbill.txtqty.bind("<KeyPress>", lambda event, obj=frmbill.txtqty: numbers1(event,obj))
+    frmbill.txtprice.bind("<KeyPress>", lambda event, obj=frmbill.txtprice: floatonly(event,obj))
 
     frmbill.txtprice.bind("<Return>", lambda event, obj=frmbill.txtprice: widget_return(event,obj))
     frmbill.txtprice.bind("<Tab>", lambda event, obj=frmbill.txttotal: focus_next_widget(event, obj)) 
@@ -73,8 +169,8 @@ def updateUIAttributes(top, root):
     frmbill.txttotal.bind("<Tab>", lambda event, obj=frmbill.btnadditem: focus_next_widget(event, obj)) 
 
     frmbill.btnadditem.bind('<Return>', lambda event, obj=frmbill.btnfind: add_return(event,obj))
-    
-    #frmbill.txtmobileno.bind("<Tab>", lambda event, obj=frmbill.btnfind: focus_next_widget(event, obj))   
+    frmbill.btnclear.bind('<Return>', lambda event, obj=frmbill.btnclear: clearitem(event,obj))
+
 
     items=['item1','item2','item3','item4']
     frmbill.cboitemname.configure(values=items)
@@ -113,12 +209,6 @@ def findbill():
 # txtcustomerno
 # txtaddress
 # txtvehicleinfo
-
-
-
-
-
-
 # txtitemno
 # lblitemslno
 # cboitemname
@@ -127,80 +217,83 @@ def findbill():
 # txtprice
 # txttotal
 # btnprint
-
 # def update(self):
 #     for idx, node in enumerate(self.treeview.get_children()):
 #         self.tree.item(node, text="Updated_Item_" + str(idx))
 
+def additem():
+    if validateitem(frmbill):        
+        slnoupd=frmbill.lblitemslno['text']
+        print("test1")
+        if slnoupd !="":        
+            if frmbill.Scrolledtreeview1.exists(slnoupd)==True:
+                values=get_duple(frmbill)  
+                #print(values)  
+                #messagebox.showwarning("item exists", "item exists")
+                frmbill.Scrolledtreeview1.item(slnoupd,values=values)
+                clearitem()
+                return True
+        else:
+            values=get_duple(frmbill)  
+            print(values[0]) 
+            frmbill.Scrolledtreeview1.insert("",'end', iid=str(values[0]),text="L1",values=values)
+            clearitem()
+    else:
+        messagebox.showwarning("enter all details","Invalid item")  
+
+
+def saveitem():
+    savebill(frmbill)
 
 def OnDoubleClick(event):
     #print(event)
-
-    
-
     item=frmbill.Scrolledtreeview1.identify('item',event.x,event.y)
     #item = frmbill.Scrolledtreeview1.selection()[0]
     #print("you clicked on", frmbill.Scrolledtreeview1.item(item,"values"))
     selitem=frmbill.Scrolledtreeview1.item(item,"values")
-
+    print(selitem)
 
     frmbill.txtitemno.delete('1.0','end')
     frmbill.txtqty.delete('1.0','end')
     frmbill.txtprice.delete('1.0','end')
     frmbill.txttotal.delete('1.0','end')
 
-
     #print(selitem[0])
     frmbill.lblitemslno['text']=selitem[0]
+    frmbill.txtitemno.configure(state='normal')
+    frmbill.txtitemno.delete('1.0','end')
     frmbill.txtitemno.insert('1.0',selitem[1])
+    frmbill.txtitemno.configure(state='disabled')
 
     # frmbill.cboitemname.insert('1.0',selitem[2])
     # frmbill.cbouom.insert('1.0',selitem[3])
+    psv_support.combobox.set(selitem[2])
+    psv_support.combobox1.set(selitem[3])
 
     frmbill.txtqty.insert('1.0',selitem[4])
     frmbill.txtprice.insert('1.0',selitem[5])
     frmbill.txttotal.insert('1.0',selitem[6])
 
-from print import openprint
-
 def printbill():
-    openprint()
-    
-    
-    #App = QApplication(sys.argv)
-    #window = Window()
-    #sys.exit(App.exec())
+    openprint()  
 
-def additem():    
-    #print("test")   
-    # vehicleno=frmbill.txtvehicleno.get('1.0','end-1c')
-    itemname= frmbill.cboitemname.get()
-    uom = frmbill.cbouom.get()
-    qty = frmbill.txtqty.get('1.0','end-1c')
-    price = frmbill.txtprice.get('1.0','end-1c')
-    total = frmbill.txttotal.get('1.0','end-1c')
-    
-    slno= len(frmbill.Scrolledtreeview1.get_children())+1
-    values=[]
-    values.append(slno)
-    values.append("itemNo")
-    values.append(itemname)
-    values.append(uom)
-    values.append(qty)
-    values.append(price)
-    values.append(total)
-    t=tuple(values)
-    #print(t)
-    frmbill.Scrolledtreeview1.insert("",'end', iid=slno,text="L1",values=t)
+
     
 
-    # print(itemname)
-    # print(uom)
-    # txtmobileno
-    # btnfind
 
-# def insert_data(self):
-#     self.treeview.insert('', 'end', iid=self.iid,text="",values=())
-#     self.iid = self.iid + 1
-#     self.id = self.id + 
+connect('psv', alias='db1',username='psv',password='psv')  
+
+def clearitem():
+    frmbill.lblitemslno['text']=""
+
+    frmbill.txtitemno.configure(state='normal')
+    frmbill.txtitemno.delete('1.0','end')   
+    frmbill.txtitemno.configure(state='disabled')
+
+    frmbill.txtqty.delete('1.0','end')
+    frmbill.txtprice.delete('1.0','end')
+    frmbill.txttotal.delete('1.0','end')
+    psv_support.combobox.set("")
+    psv_support.combobox1.set("")
+
     
