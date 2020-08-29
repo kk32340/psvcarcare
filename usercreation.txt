@@ -9,6 +9,11 @@ db.createUser(
   }
 )
 
+Login:
+
+mongo --port 27017 -u "psv" -p "psv" --authenticationDatabase "psv"
+
+stop service (service.msc ) disable authorization and create user and enable , start mongodb service in (service.msc)
 
 //E:\MongoDB\bin
 
@@ -16,8 +21,29 @@ mongod.cfg
 
 
 security:
-  authorization: disabled
+  authorization: disableds
 
   restart service
+
+
+basic comments:
+
+use psv
+db.auth('psv','psv')
+show tables
+db.bill.find()
+db.bill.remove({}) -- all records
+if _id matches -- the save will update the records
+
+
+
+git:
+path=%path%;C:\Program Files\Git\bin
+sh
+git init
+git remote add origin  https://github.com/kk32340/psvcarcare.git
+git pull
+
+git remote set-url origin https://github.com/kk32340/psvcarcare.git
 
   
