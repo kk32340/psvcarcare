@@ -46,4 +46,66 @@ git pull
 
 git remote set-url origin https://github.com/kk32340/psvcarcare.git
 
-  
+
+
+
+MongoDB 3.2.22 32 bit version:
+Setup:
+https://www.techoism.com/install-mongodb-3-2-on-windows/
+
+
+create config file with below information:
+------------------------------------------
+
+##file name can be any : mongo.config
+
+##store data here
+dbpath=E:\MongoDB\data
+
+##all output go here
+logpath=E:\MongoDB\log\mongo.log
+
+##log read and write operations
+diaglog=3
+
+and create one more folder "db" inside  E:\MongoDB\
+
+Execute:
+-------
+
+C:\Program Files (x86)\MongoDB\Server\3.2\bin>mongod --config C:\Program Files (x86)\MongoDB\Server\3.2\mongo.config
+
+execute:
+---------
+mongod.exe --dbpath E:\MongoDB\db --journal  --storageEngine=mmapv1
+
+start mongo db shell:
+--------------------
+mongo
+
+in cmd administrator mode run :
+
+mongod --dbpath=E:\MongoDB\db --journal  --storageEngine=mmapv1 --logpath=E:\MongoDB\log\mongo.log --install
+
+net start MongoDB
+
+------------------------------------------------ Extra -------------------------------------------------------------------------------------
+
+extra:
+
+create windows service:
+---------------------
+
+C:\Program Files (x86)\MongoDB\Server\3.2\bin>mongod --config C:\Program Files (x86)\MongoDB\Server\3.2\mongo.config  --install
+
+To start MongoDB Service:
+---------------------
+# net start MongoDB
+
+To stop MongoDB Service:
+------------------------
+net stop MongoDB
+
+To remove MongoDB Service:
+-------------------------
+C:\Program Files (x86)\MongoDB\Server\3.2\bin>mongod --remove
