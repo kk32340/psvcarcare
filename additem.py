@@ -1,9 +1,14 @@
 
 from tkinter import *  
 from tkinter import messagebox 
+from db import *
 
 def get_duple(frmbill):
     itemname= frmbill.cboitemname.get()
+
+    #print(itemname)
+
+    itemtype= frmbill.cboitemtype.get()
     uom = frmbill.cbouom.get()
     qty = frmbill.txtqty.get('1.0','end-1c')
     if len(qty) ==0:
@@ -23,10 +28,19 @@ def get_duple(frmbill):
     values=[]
     if slno > 0:
         values.append(slno)
-    if len("itemNo") > 0:
-        values.append("itemNo")
+
+    item_added = item.objects(itemname=itemname)
+
+    if len(item_added) > 0:
+        values.append(item_added[0].itemno)
+
+    if len(itemtype) > 0:
+        values.append(itemtype)
+
     if len(itemname) > 0:
         values.append(itemname)
+
+    
     if len(uom) > 0:
         values.append(uom)
     if qtyval > 0:        
@@ -35,12 +49,16 @@ def get_duple(frmbill):
         values.append(priceval)
     if totalval > 0:
         values.append(totalval)
+
+    print(values)
+
     return tuple(values)
 
 def validateitem(frmbill):
     validated=False
 
     itemname= frmbill.cboitemname.get()
+    itemtype= frmbill.cboitemtype.get()
     uom = frmbill.cbouom.get()
     qty = frmbill.txtqty.get('1.0','end-1c')
     if len(qty) ==0:
@@ -60,8 +78,15 @@ def validateitem(frmbill):
     values=[]
     if slno > 0:
         values.append(slno)
-    if len("itemNo") > 0:
-        values.append("itemNo")
+
+    item_added = item.objects(itemname=itemname)
+    
+    if len(item_added) > 0:
+        values.append(item_added[0].itemno)
+    
+    if len(itemtype) > 0:
+        values.append(itemtype)
+
     if len(itemname) > 0:
         values.append(itemname)
     if len(uom) > 0:
@@ -73,8 +98,9 @@ def validateitem(frmbill):
     if totalval > 0:
         values.append(totalval)
     t=tuple(values)   
-    #print(t) 
-    if len(t) < 7:
+    # print(t) 
+    # print(len(t)) 
+    if len(t) < 8:
         return validated
     return True
         #messagebox.showwarning("enter all details","Warning")

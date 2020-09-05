@@ -5,11 +5,10 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter, QPrintPreviewDialog
 from PyQt5.Qt import QFileInfo
 
-
-def openprint():
+def openprint(printtext):
     App = QApplication(sys.argv)
     window = Window()
-    window.textEdit.setText("This is test message")
+    window.textEdit.setText(printtext)
     App.exec()
 
 class Window(QMainWindow):

@@ -9,10 +9,17 @@ from tkinter import messagebox
 from mongoengine import *
 from mongoengine.context_managers import switch_collection
 from db import *
+from psv import *
+from printdocument import *
 
 def focus_next_widget(event,obj):
     obj.focus()
     #print(obj)
+    return("break")
+
+def focus_next_widget1(event, source, obj):
+    source.unpost_listbox()
+    obj.focus()
     return("break")
 
 def widget_return(event, obj):
@@ -148,13 +155,21 @@ def updateUIAttributes(top, root):
     frmbill.txtcustomerno.bind("<Return>", lambda event, obj=frmbill.txtcustomerno: widget_return(event,obj))
 
     frmbill.lblitemslno['text']=""
-    frmbill.cboitemname.bind("<Return>", lambda event, obj=frmbill.cboitemname: widget_return(event,obj))
-    frmbill.cboitemname.bind("<Tab>", lambda event, obj=frmbill.cbouom: focus_next_widget(event, obj)) 
+
+    frmbill.cboitemtype.bind("<Return>", lambda event, obj=frmbill.cboitemtype: widget_return(event,obj))
+    frmbill.cboitemtype.bind("<Tab>", lambda event, obj=frmbill.cboitemname: focus_next_widget(event, obj)) 
+    frmbill.cboitemtype.configure(textvariable=psv_support.varcboitemtype)
+
+    # frmbill.cboitemname.bind("<Return>", lambda event, obj=frmbill.cboitemname: widget_return(event,obj))
+    frmbill.cboitemname.bind("<Tab>", lambda event, obj1=frmbill.cboitemname, obj=frmbill.cbouom: focus_next_widget1(event,obj1, obj)) 
+    # frmbill.cboitemname.configure(textvariable=psv_support.varcboitemname)
 
     frmbill.cbouom.bind("<Return>", lambda event, obj=frmbill.cbouom: widget_return(event,obj))
     frmbill.cbouom.bind("<Tab>", lambda event, obj=frmbill.txtqty: focus_next_widget(event, obj)) 
-    frmbill.cbouom.configure(textvariable=psv_support.combobox1)
-
+    frmbill.cbouom.configure(textvariable=psv_support.varcbouom)
+    uom_value_list = ['NOS','KG','LTR']
+    frmbill.cbouom.configure(values=uom_value_list)
+    frmbill.cbouom.configure(state='readonly')
 
     frmbill.txtqty.bind("<Return>", lambda event, obj=frmbill.txtqty: widget_return(event,obj))
     frmbill.txtqty.bind("<Tab>", lambda event, obj=frmbill.txtprice: focus_next_widget(event, obj))
@@ -172,14 +187,15 @@ def updateUIAttributes(top, root):
     frmbill.btnclear.bind('<Return>', lambda event, obj=frmbill.btnclear: clearitem(event,obj))
 
 
-    items=['item1','item2','item3','item4']
-    frmbill.cboitemname.configure(values=items)
+    # items=['item1','item2','item3','item4']
+    # frmbill.cboitemname.configure(values=items)
 
-    frmbill.Scrolledtreeview1["columns"] = ("slno", "itemno","itemname","uom","qty","price","total")
+    frmbill.Scrolledtreeview1["columns"] = ("slno", "itemno","itemtype","itemname","uom","qty","price","total")
     frmbill.Scrolledtreeview1['show'] = 'headings'
     
     frmbill.Scrolledtreeview1.column("slno", width=2, anchor='c')
     frmbill.Scrolledtreeview1.column("itemno", width=2, anchor='c')
+    frmbill.Scrolledtreeview1.column("itemtype", width=2, anchor='c')
     frmbill.Scrolledtreeview1.column("itemname", width=300, anchor='c')
     frmbill.Scrolledtreeview1.column("uom", width=2, anchor='c')
     frmbill.Scrolledtreeview1.column("qty", width=2, anchor='c')
@@ -188,6 +204,7 @@ def updateUIAttributes(top, root):
 
     frmbill.Scrolledtreeview1.heading("slno", text="SlNo")
     frmbill.Scrolledtreeview1.heading("itemno", text="Itemno")
+    frmbill.Scrolledtreeview1.heading("itemtype", text="Itemtype")
     frmbill.Scrolledtreeview1.heading("itemname", text="ItemName")
     frmbill.Scrolledtreeview1.heading("uom", text="UOM")
     frmbill.Scrolledtreeview1.heading("qty", text="QTY")
@@ -199,9 +216,7 @@ def updateUIAttributes(top, root):
 def findbill():
     vehicleno=frmbill.txtvehicleno.get('1.0','end-1c')
     mobileno=frmbill.txtmobileno.get('1.0','end-1c')
-    
-    print(vehicleno)
-    print(mobileno)
+
 
 # btnnewbill
 # btnmodifybill
@@ -222,10 +237,28 @@ def findbill():
 #         self.tree.item(node, text="Updated_Item_" + str(idx))
 
 def additem():
+    itemname=frmbill.cboitemname.get_value()
+    if len(itemname) > 0:
+        if len(item.objects(itemname=itemname)) <=0:        
+            if messagebox.askyesno("New Item","Item does not exists \n, do you want to create new item?"):
+                addnewItem(itemname)    
+
+    val = validateitem(frmbill)
+    print(itemname)
+    print(val)
+
     if validateitem(frmbill):        
         slnoupd=frmbill.lblitemslno['text']
-        print("test1")
-        if slnoupd !="":        
+        #itemno=frmbill.txtitemno.get('1.0','end-1c')
+        #print("item No")
+        #print(itemno)
+        #if len(itemno)==0:
+         #   addnewItem(frmbill.cboitemname.get())            
+            #frmbill.txtitemno.insert('1.0',itemnoadded)
+
+        #messagebox.showinfo(str(len(itemno)))
+
+        if slnoupd !="":
             if frmbill.Scrolledtreeview1.exists(slnoupd)==True:
                 values=get_duple(frmbill)  
                 #print(values)  
@@ -234,8 +267,8 @@ def additem():
                 clearitem()
                 return True
         else:
-            values=get_duple(frmbill)  
-            print(values[0]) 
+            values=get_duple(frmbill)              
+            #frmbill.cboitemname.set("")
             frmbill.Scrolledtreeview1.insert("",'end', iid=str(values[0]),text="L1",values=values)
             clearitem()
     else:
@@ -263,23 +296,31 @@ def OnDoubleClick(event):
     frmbill.txtitemno.configure(state='normal')
     frmbill.txtitemno.delete('1.0','end')
     frmbill.txtitemno.insert('1.0',selitem[1])
-    frmbill.txtitemno.configure(state='disabled')
+    #frmbill.txtitemno.configure(state='disabled')
 
     # frmbill.cboitemname.insert('1.0',selitem[2])
     # frmbill.cbouom.insert('1.0',selitem[3])
-    psv_support.combobox.set(selitem[2])
-    psv_support.combobox1.set(selitem[3])
 
-    frmbill.txtqty.insert('1.0',selitem[4])
-    frmbill.txtprice.insert('1.0',selitem[5])
-    frmbill.txttotal.insert('1.0',selitem[6])
+    psv_support.varcboitemtype.set(selitem[2])
+    #psv_support.varcboitemname.set(selitem[3])
+    frmbill.cboitemname.set_value(selitem[3])
+    psv_support.varcbouom.set(selitem[4])
+
+    frmbill.txtqty.insert('1.0',selitem[5])
+    frmbill.txtprice.insert('1.0',selitem[6])
+    frmbill.txttotal.insert('1.0',selitem[7])
 
 def printbill():
-    openprint()  
-
-
+    inv=frmbill.txtbillno['text']
+    if len(inv) >0:
+        details=getbill_details(inv)
+        printstr=getdocument(details)
+        openprint(printstr)  
+    else:
+        messagebox.showwarning("Print","Save Invoice before print")
     
 
+    
 
 connect('psv', alias='db1',username='psv',password='psv')  
 
@@ -293,7 +334,9 @@ def clearitem():
     frmbill.txtqty.delete('1.0','end')
     frmbill.txtprice.delete('1.0','end')
     frmbill.txttotal.delete('1.0','end')
-    psv_support.combobox.set("")
-    psv_support.combobox1.set("")
+    psv_support.varcboitemtype.set("")
+    #psv_support.varcboitemname.set("")
+    frmbill.cboitemname.set_value("")
+    psv_support.varcbouom.set("")
 
     

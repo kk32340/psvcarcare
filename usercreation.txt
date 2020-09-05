@@ -1,3 +1,26 @@
+-- .tcl file update
+
+
+auto complete:
+http://code.activestate.com/recipes/580770-combobox-autocomplete/
+
+
+import psv_support
+from actions import *
+
+
+def vp_start_gui():
+    '''Starting point when module is the main routine.'''
+    global val, w, root
+    root = tk.Tk()
+    psv_support.set_Tk_var()
+    top = Toplevel1 (root)
+    updateUIAttributes(top, root)   -- here 
+    psv_support.init(root, top)
+    root.mainloop()
+
+
+
 use psv
 db.createUser(
   {
@@ -89,6 +112,25 @@ mongod --dbpath=E:\MongoDB\db --journal  --storageEngine=mmapv1 --logpath=E:\Mon
 
 net start MongoDB
 
+
+backup:
+-------
+
+mongodump --out=/data/backup/
+Note: take all dbs full backup to a folder
+
+restore:
+--------
+mongorestore dump-2013-10-25/
+Note : Here, mongorestore imports the database backup in the dump-2013-10-25 directory to the mongod instance running on the localhost interface on the default port 27017.
+
+
+convert .py to exe:
+-------------------
+pyinstaller --onefile -w 'psv.py'
+
+
+
 ------------------------------------------------ Extra -------------------------------------------------------------------------------------
 
 extra:
@@ -109,3 +151,9 @@ net stop MongoDB
 To remove MongoDB Service:
 -------------------------
 C:\Program Files (x86)\MongoDB\Server\3.2\bin>mongod --remove
+
+
+
+
+
+--* Mongo DB Queries *-----
