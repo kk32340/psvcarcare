@@ -140,7 +140,7 @@ def updateUIAttributes(top, root):
     frmbill.btndelete.configure(command=del_treeview_item)
         
     frmbill.btnfind.configure(command=findbill)   
-    frmbill.btnfind.bind('<Return>', lambda event, obj=frmbill.btnfind: find_return(event,obj))
+    frmbill.btnfind.bind('<Return>', lambda event, obj=frmbill.btnfind: findbill_Return(event,obj))
     
     frmbill.btnprint.configure(command=printbill)
    
@@ -216,6 +216,8 @@ def updateUIAttributes(top, root):
     frmbill.Scrolledtreeview1.heading("total", text="Total")
     frmbill.Scrolledtreeview1.bind("<Double-1>", OnDoubleClick)
 
+def findbill_Return(event, obj):
+    findbill()
 
 def findbill():
     vehicleno=frmbill.txtvehicleno.get('1.0','end-1c')
@@ -310,10 +312,17 @@ def loadinv(invno):
         # return False
         values = get_item_duple(data.items)
         
-        frmbill.Scrolledtreeview1.delete(*frmbill.Scrolledtreeview1.get_children())
-        for i in values:
+        frmbill.Scrolledtreeview1.delete(*frmbill.Scrolledtreeview1.get_children())        
+        for i in values:            
             frmbill.Scrolledtreeview1.insert("",'end', iid=str(i[0]),text="L1",values=i)
+        g_total()
 
+def g_total():
+    g_total=0.0           
+    for child in frmbill.Scrolledtreeview1.get_children():
+        #print(frmbill.Scrolledtreeview1.item(child)["values"][7])
+        g_total += float(frmbill.Scrolledtreeview1.item(child)["values"][7])
+    frmbill.labeltottxt['text']=str(g_total)
 
 # btnnewbill
 # btnmodifybill
@@ -339,6 +348,7 @@ def del_treeview_item():
         for i in frmbill.Scrolledtreeview1.get_children():
             if slno == i:
                 frmbill.Scrolledtreeview1.delete(i)
+    g_total()
 
 
 def additem():
@@ -370,14 +380,17 @@ def additem():
                 #messagebox.showwarning("item exists", "item exists")
                 frmbill.Scrolledtreeview1.item(slnoupd,values=values)
                 clearitem()
+                g_total()
                 return True
         else:
             values=get_duple(frmbill)              
             #frmbill.cboitemname.set("")
             frmbill.Scrolledtreeview1.insert("",'end', iid=str(values[0]),text="L1",values=values)
+            g_total()
             clearitem()
     else:
-        messagebox.showwarning("enter all details","Invalid item")  
+        messagebox.showwarning("enter all details","Invalid item")
+    
 
 
 def saveitem():

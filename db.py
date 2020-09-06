@@ -57,21 +57,34 @@ def findinvoice(frmbill):
     #if len(invdetail) >0 :
     pass
 
-
 def getbill_details(invno):
    return bill.objects(invoiceno=invno)
 
 def savebill(frmbill):
     
+    validated = True
+
+    vehicleno = frmbill.txtvehicleno.get('1.0','end-1c')
+    mobileno = frmbill.txtmobileno.get('1.0','end-1c')
+    
+    if len(vehicleno) <=0:
+        validated = False
+        messagebox.showinfo("No Items","vehicle # is Mandatory")
+
+    if len(mobileno) <=0:
+        validated = False
+        messagebox.showinfo("No Items","Enter mobile #")
+
+    if len(frmbill.Scrolledtreeview1.get_children()) <=0:
+        validated = False
+        messagebox.showinfo("No Items","No Items")
+
+    if validated==False:
+        return False
+
+
     invno = frmbill.txtbillno['text']    
-    # bill_list=bill.objects(invoiceno=invno)
-    # print(invno)
-    # print(bill_list.items)
-    # return False
-
-    # if len(bill_list) <=0:
-    #     bill_list = bill()
-
+   
     bill_list = bill()
     bill_list.vehicleno = frmbill.txtvehicleno.get('1.0','end-1c')
     bill_list.mobileno= frmbill.txtmobileno.get('1.0','end-1c')

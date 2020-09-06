@@ -23,8 +23,28 @@ def getdocument(details):
     for i in details.items:
         gtotal += i.total
         bill += "{0:^10}".format(str(i.slno))
-        bill += "{0:<80}".format(i.itemname) 
-        bill += "{0:<10}".format(str(i.uom)) 
+        
+        # bill += "%50s" % i.itemname.upper()
+        # bill += "%10s" % i.uom.upper()
+
+        # i_name = "{0:<80}".format(i.itemname.upper())
+        # i_uom = "{0:<10}".format(str(i.uom.upper())) 
+
+        # print(len(i_name)) 
+        # print(len(i_uom)) 
+
+        bill += "{0:<50}".format(i.itemname.upper())  + "{0:<10}".format(str(i.uom.upper()))
+        #bill += "{0:<10}".format(str(i.uom.upper())) 
+
+        # name = i.itemname.upper()
+        # name = name + repeat_to_length(" ",50-len(name))
+        # bill += name
+
+        # uom = i.uom.upper()
+        # uom = uom + repeat_to_length(" ",10-len(uom))
+        # bill += uom
+
+
         bill += "{0:>15}".format(str(i.qty)) 
         bill += "{0:>15}".format(str(i.price)) 
         bill += "{0:>15}".format(str(i.total)) 
@@ -37,3 +57,6 @@ def getdocument(details):
     bill += "---------------------------------------------------------------------------------------------------------------------------------------------------------"
     
     return bill
+
+def repeat_to_length(string_to_expand, length):
+    return (string_to_expand * (int(length/len(string_to_expand))+1))[:length]
