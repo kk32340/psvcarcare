@@ -1,38 +1,39 @@
-def getdocument(details):  
-    print(details)
-    bill_item = details.items      
-    params={}
-    params["i1"]="item1"
-    params["i2"]="item2"
-    params["i3"]="item3"
-    params["i4"]="item4"
-    params["invno"]="3"
-    params["invoicedate"]="26/08/2020"
+from db import *
 
-    bill="""    
-    PSP
-    CAR CARE
-    1223/6B, BY-PASS ROAD
-    SHANMUGANATHI, PALANI-624 602
-    EMAIL:pspcarcare@gmail.com                                                                  INVOICE NO: {invoiceno}
-    PHONE NO: 9944429143, 9787703040                                                    INVOICEDATE:{invoicedate}
-        
-    S.No                     ITEM DESCRIPTION                                            QUANTITY 	UNIT    	AMOUNT
-    -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    """.format(**params)
-
-    for item in bill_item:
-        bill += item.slno + "    "
-        bill += item.itemname + "    "
-        bill += item.uom + "    "
-        bill += item.qty + "    "
-        bill += item.price + "    "
-
-    # for item in range(20)
-    # items=""
-    # items += replicate(" ",3)
-
+def getdocument(details):
+    bill=""
+    bill += "PSP"
+    bill += "\n" + "CAR CARE"
+    bill += "\n" + "1223/6B, BY-PASS ROAD"
+    bill += "\n" + "SHANMUGANATHI, PALANI-624 602"
+    bill += "\n" + "EMAIL:pspcarcare@gmail.com                                                                  INVOICE NO:" + details.invoiceno
+    bill += "\n" + "PHONE NO: 9944429143, 9787703040                                                    INVOICEDATE:" + details.date_modified.strftime("%m/%d/%Y %H:%M")
+    bill += "\n"
+    bill += "\n"
+    bill += "{0:<10}".format("S.No")
+    bill += "{0:<65}".format("ITEM DESCRIPTION") 
+    bill += "{0:<10}".format("UNIT") 
+    bill += "{0:<15}".format("QUANTITY") 
+    bill += "{0:<15}".format("AMOUNT") 
+    bill += "{0:<15}".format("TOTAL") 
+    bill += "\n"
+    bill += "---------------------------------------------------------------------------------------------------------------------------------------------------------"
+    bill += "\n"
+    gtotal=0
+    for i in details.items:
+        gtotal += i.total
+        bill += "{0:^10}".format(str(i.slno))
+        bill += "{0:<80}".format(i.itemname) 
+        bill += "{0:<10}".format(str(i.uom)) 
+        bill += "{0:>15}".format(str(i.qty)) 
+        bill += "{0:>15}".format(str(i.price)) 
+        bill += "{0:>15}".format(str(i.total)) 
+        bill += "\n"
+    bill += "---------------------------------------------------------------------------------------------------------------------------------------------------------"
+    bill += "\n"
+    bill += "{0:>138}".format("Total:")
+    bill += "{0:>15}".format(str(gtotal))
+    bill += "\n"
+    bill += "---------------------------------------------------------------------------------------------------------------------------------------------------------"
+    
     return bill
-
-def replicate(string_to_expand, length):
-    return (string_to_expand * (int(length/len(string_to_expand))+1))[:length]

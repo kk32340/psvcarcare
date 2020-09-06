@@ -2,6 +2,7 @@ from mongoengine import *
 from mongoengine.context_managers import switch_collection
 from tkinter import messagebox 
 import re
+from datetime import datetime
 
 connect('psv', alias='db1',username='psv',password='psv')
 
@@ -33,6 +34,8 @@ class bill(Document):
     vehicleinfo = StringField(max_length=100)
     invoiceno= StringField(primary_key=True)
     items = ListField(EmbeddedDocumentField(bill_item1))
+    date_created = DateTimeField()
+    date_modified = DateTimeField()
     meta = {'db_alias': 'db1'}
 
 def addnewItem(itemname):
@@ -61,21 +64,29 @@ def getbill_details(invno):
 def savebill(frmbill):
     
     invno = frmbill.txtbillno['text']    
-    bill_list=bill.objects(invoiceno=invno)
-    if len(bill_list) <=0:
-        bill_list = bill()
+    # bill_list=bill.objects(invoiceno=invno)
+    # print(invno)
+    # print(bill_list.items)
+    # return False
 
+    # if len(bill_list) <=0:
+    #     bill_list = bill()
+
+    bill_list = bill()
     bill_list.vehicleno = frmbill.txtvehicleno.get('1.0','end-1c')
     bill_list.mobileno= frmbill.txtmobileno.get('1.0','end-1c')
     bill_list.custname = frmbill.txtcustomerno.get('1.0','end-1c')
     bill_list.custadd= frmbill.txtaddress.get('1.0','end-1c')
     bill_list.vehicleinfo = frmbill.txtvehicleinfo.get('1.0','end-1c')
-    #invno = frmbill.txtmobileno.get('1.0','end-1c')
+    bill_list.date_created = datetime.now()
+    bill_list.date_modified = datetime.now()
 
     if len(invno) > 0:
         bill_list.invoiceno= invno
     else:
         bill_list.invoiceno = "INV" + str(bill.objects.count() +1 ).zfill(4)    
+
+    bill_list.items=[]
 
     for child in frmbill.Scrolledtreeview1.get_children():   
         bill_item=bill_item1()        

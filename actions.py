@@ -36,7 +36,8 @@ def add_return(event, obj):
     additem()
 
 def find_return(event, obj):
-    findbill()
+    window = tk.Toplevel(root)
+    #findbill()
 
 def numberonly(event, obj):   
 
@@ -80,14 +81,14 @@ def floatonly (event, obj):
 def floatonly1 (event, obj):
     v = event.char
     val=obj.get('1.0','end-1c')
-    print(val)
+    #print(val)
     #print(validate(obj.get('1.0','end-1c')))
 
     try:
         v = float(val)
         if len(val) >0:
-            print("v is : ")
-            print(v)
+            #print("v is : ")
+            #print(v)
             return("break")
         else:
             return True
@@ -98,7 +99,7 @@ def floatonly1 (event, obj):
 
 def check(event):
     text = event.widget.get()
-    print('text:', text)
+    #print('text:', text)
 
     parts = text.split('.')
     parts_number = len(parts)
@@ -129,12 +130,15 @@ def on_validate(P):
 
 def updateUIAttributes(top, root):  
     global frmbill
+    global parentroot
     frmbill=top
+    parentroot = root
     frmbill.btnadditem.configure(command=additem)
     frmbill.btnclear.configure(command=clearitem)
     frmbill.btnsave.configure(command=saveitem)
-       
-
+    frmbill.btnnewbill.configure(command=newitem)
+    frmbill.btndelete.configure(command=del_treeview_item)
+        
     frmbill.btnfind.configure(command=findbill)   
     frmbill.btnfind.bind('<Return>', lambda event, obj=frmbill.btnfind: find_return(event,obj))
     
@@ -217,6 +221,99 @@ def findbill():
     vehicleno=frmbill.txtvehicleno.get('1.0','end-1c')
     mobileno=frmbill.txtmobileno.get('1.0','end-1c')
 
+    if len(vehicleno) <= 0 and len(mobileno) <=0:       
+        messagebox.showwarning("Find Invoice","Enter vehicle # or Mobile #")
+        frmbill.txtvehicleno.focus()
+        return False
+
+    x=parentroot.winfo_rootx()
+    y=parentroot.winfo_rooty()
+    #h=parentroot.winfo_height()
+    window = tk.Toplevel(parentroot)
+    #window.geometry("200x200") 
+    window.geometry("+%d+%d" % (x+450,
+                          y+70
+                         )
+             ) 
+    window.geometry("380x200")
+    window.update()
+    window.resizable(0,0)
+    window.title("Invoice List")
+    window.attributes("-toolwindow", 1)
+
+    Scrolledtreeview1 = ScrolledTreeView(window)    
+    Scrolledtreeview1.pack(side="top", fill="both", expand=True, padx=0, pady=0)
+
+    Scrolledtreeview1["columns"] = ("invoiceno","date_modified", "vehicleno","custname")
+    Scrolledtreeview1['show'] = 'headings'
+    
+    Scrolledtreeview1.column("invoiceno", width=2, anchor='c')
+    Scrolledtreeview1.column("date_modified", width=2, anchor='c')
+    Scrolledtreeview1.column("vehicleno", width=2, anchor='c')
+    Scrolledtreeview1.column("custname", width=2, anchor='c')
+
+    Scrolledtreeview1.heading("invoiceno", text="Inv.No")
+    Scrolledtreeview1.heading("date_modified", text="Inv.Date")
+    Scrolledtreeview1.heading("vehicleno", text="Vehicleno")
+    Scrolledtreeview1.heading("custname", text="Name")
+    
+    #Scrolledtreeview1.bind("<Double-1>", invDoubleClick(Scrolledtreeview1))
+    Scrolledtreeview1.bind("<Double-1>", lambda event, obj=Scrolledtreeview1: invDoubleClick(event, obj)) 
+
+    values=get_inv_duple(vehicleno, mobileno)              
+    #print(values)
+
+    for i in values:
+        Scrolledtreeview1.insert("",'end', iid=str(i[0]),text="L1",values=i)
+
+
+def invDoubleClick(event, treeview):
+    #print(event)
+    item=treeview.identify('item',event.x,event.y)    
+    #print(item)
+    loadinv(item)
+    #selitem=treeview.identify.item(item,"values")
+
+def newitem():
+    # frmbill.txtvehicleno.delete('1.0','end')    
+    #frmbill.txtmobileno.delete('1.0','end')    
+    frmbill.txtbillno['text']=""
+    #frmbill.txtcustomerno.delete('1.0','end')    
+    #frmbill.txtaddress.delete('1.0','end')    
+    #frmbill.txtvehicleinfo.delete('1.0','end')
+    clearitem()
+    frmbill.Scrolledtreeview1.delete(*frmbill.Scrolledtreeview1.get_children())
+
+def loadinv(invno):
+    data_list = bill.objects(invoiceno=invno)
+    data = data_list[0]
+    #print(data[0])
+    
+    if len(data) > 0:
+        frmbill.txtvehicleno.delete('1.0','end')
+        frmbill.txtvehicleno.insert('1.0',data.vehicleno)
+
+        frmbill.txtmobileno.delete('1.0','end')
+        frmbill.txtmobileno.insert('1.0',data.mobileno)
+
+        frmbill.txtbillno['text']=data.invoiceno
+
+        frmbill.txtcustomerno.delete('1.0','end')
+        frmbill.txtcustomerno.insert('1.0',data.custname)
+
+        frmbill.txtaddress.delete('1.0','end')
+        frmbill.txtaddress.insert('1.0',data.custadd)
+
+        frmbill.txtvehicleinfo.delete('1.0','end')
+        frmbill.txtvehicleinfo.insert('1.0',data.vehicleinfo)
+        # print(data.items)
+        # return False
+        values = get_item_duple(data.items)
+        
+        frmbill.Scrolledtreeview1.delete(*frmbill.Scrolledtreeview1.get_children())
+        for i in values:
+            frmbill.Scrolledtreeview1.insert("",'end', iid=str(i[0]),text="L1",values=i)
+
 
 # btnnewbill
 # btnmodifybill
@@ -236,6 +333,14 @@ def findbill():
 #     for idx, node in enumerate(self.treeview.get_children()):
 #         self.tree.item(node, text="Updated_Item_" + str(idx))
 
+def del_treeview_item():
+    slno=frmbill.lblitemslno['text']
+    if len(slno) > 0:        
+        for i in frmbill.Scrolledtreeview1.get_children():
+            if slno == i:
+                frmbill.Scrolledtreeview1.delete(i)
+
+
 def additem():
     itemname=frmbill.cboitemname.get_value()
     if len(itemname) > 0:
@@ -244,8 +349,8 @@ def additem():
                 addnewItem(itemname)    
 
     val = validateitem(frmbill)
-    print(itemname)
-    print(val)
+    #print(itemname)
+    #print(val)
 
     if validateitem(frmbill):        
         slnoupd=frmbill.lblitemslno['text']
@@ -284,7 +389,7 @@ def OnDoubleClick(event):
     #item = frmbill.Scrolledtreeview1.selection()[0]
     #print("you clicked on", frmbill.Scrolledtreeview1.item(item,"values"))
     selitem=frmbill.Scrolledtreeview1.item(item,"values")
-    print(selitem)
+    #print(selitem)
 
     frmbill.txtitemno.delete('1.0','end')
     frmbill.txtqty.delete('1.0','end')
@@ -313,14 +418,13 @@ def OnDoubleClick(event):
 def printbill():
     inv=frmbill.txtbillno['text']
     if len(inv) >0:
-        details=getbill_details(inv)
-        printstr=getdocument(details)
-        openprint(printstr)  
+        #details=getbill_details(inv)
+        details = bill.objects(invoiceno=inv)                        
+        printstr=getdocument(details[0])
+        openprint(printstr)
     else:
         messagebox.showwarning("Print","Save Invoice before print")
-    
-
-    
+        
 
 connect('psv', alias='db1',username='psv',password='psv')  
 

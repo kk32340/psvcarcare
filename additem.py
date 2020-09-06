@@ -50,9 +50,37 @@ def get_duple(frmbill):
     if totalval > 0:
         values.append(totalval)
 
-    print(values)
+    #print(values)
 
     return tuple(values)
+
+
+
+
+def get_inv_duple_data(data):    
+    list=[]
+    if len(data) > 0:
+        for i in data:
+            #print(i.date_created.strftime("%m/%d/%Y %H:%M"))
+            list.append((i.invoiceno,i.date_created.strftime("%m/%d/%Y %H:%M"), i.vehicleno, i.custname))
+        return list
+    else:
+        return []
+
+def get_inv_duple(vehicleno, mobileno):    
+    if len(vehicleno) > 0:
+        data = bill.objects(vehicleno=vehicleno)
+        return get_inv_duple_data(data)
+    else:
+        data = bill.objects(mobileno=mobileno)
+        return get_inv_duple_data(data)
+
+def get_item_duple(item_list):   
+    list=[] 
+    for i in item_list:
+        list.append((i.slno, i.itemno, i.itemtype, i.itemname, i.uom, i.qty, i.price, i.total))
+    return list
+
 
 def validateitem(frmbill):
     validated=False
