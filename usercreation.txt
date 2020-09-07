@@ -12,7 +12,14 @@ http://code.activestate.com/recipes/580770-combobox-autocomplete/
 
 import psv_support
 from actions import *
+from autocomplete import *
 
+list_of_items = []
+self.cboitemname = Combobox_Autocomplete(self.Frame1, list_of_items, highlightthickness=1)        
+self.cboitemname.place(relx=0.253, rely=0.392, relheight=0.034
+        , relwidth=0.309)
+
+txttotal
 
 def vp_start_gui():
     '''Starting point when module is the main routine.'''

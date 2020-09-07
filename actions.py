@@ -285,6 +285,7 @@ def newitem():
     #frmbill.txtvehicleinfo.delete('1.0','end')
     clearitem()
     frmbill.Scrolledtreeview1.delete(*frmbill.Scrolledtreeview1.get_children())
+    g_total()
 
 def loadinv(invno):
     data_list = bill.objects(invoiceno=invno)
@@ -356,9 +357,11 @@ def additem():
     if len(itemname) > 0:
         if len(item.objects(itemname=itemname)) <=0:        
             if messagebox.askyesno("New Item","Item does not exists \n, do you want to create new item?"):
-                addnewItem(itemname)    
+                addnewItem(itemname)
+            else:
+                return False
 
-    val = validateitem(frmbill)
+    #val = validateitem(frmbill)
     #print(itemname)
     #print(val)
 

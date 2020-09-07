@@ -363,17 +363,10 @@ class Toplevel1:
         self.Label2_13.configure(text='''Total''')
 
         list_of_items = []
-        self.cboitemname = Combobox_Autocomplete(self.Frame1, list_of_items, highlightthickness=1)
-        
-        #self.cboitemname = ttk.Combobox(self.Frame1)
+        self.cboitemname = Combobox_Autocomplete(self.Frame1, list_of_items, highlightthickness=1)        
         self.cboitemname.place(relx=0.253, rely=0.392, relheight=0.034
                 , relwidth=0.309)
-        # self.cboitemname.configure(textvariable=psv_support.varcboitemname)
-        # self.cboitemname.configure(takefocus="")
-        # self.tooltip_font = "TkDefaultFont"
-        # self.cboitemname_tooltip = \
-        # ToolTip(self.cboitemname, self.tooltip_font, '''Select / Enter  item''')
-
+                
         self.txtqty = tk.Text(self.Frame1)
         self.txtqty.place(relx=0.654, rely=0.39, relheight=0.031, relwidth=0.067)
 
@@ -589,7 +582,7 @@ class Toplevel1:
         self.cboitemtype = ttk.Combobox(self.Frame1)
         self.cboitemtype.place(relx=0.132, rely=0.392, relheight=0.034
                 , relwidth=0.111)
-        self.value_list = ['Spare_Parts','Service',]
+        self.value_list = ['Material','Service']
         self.cboitemtype.configure(values=self.value_list)
         self.cboitemtype.configure(state='readonly')
         self.cboitemtype.configure(textvariable=psv_support.varcboitemtype)

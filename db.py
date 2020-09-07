@@ -62,25 +62,20 @@ def getbill_details(invno):
 
 def savebill(frmbill):
     
-    validated = True
-
     vehicleno = frmbill.txtvehicleno.get('1.0','end-1c')
     mobileno = frmbill.txtmobileno.get('1.0','end-1c')
     
-    if len(vehicleno) <=0:
-        validated = False
+    if len(vehicleno) <=0:        
         messagebox.showinfo("No Items","vehicle # is Mandatory")
-
-    if len(mobileno) <=0:
-        validated = False
-        messagebox.showinfo("No Items","Enter mobile #")
-
-    if len(frmbill.Scrolledtreeview1.get_children()) <=0:
-        validated = False
-        messagebox.showinfo("No Items","No Items")
-
-    if validated==False:
         return False
+
+    if len(mobileno) <=0:        
+        messagebox.showinfo("No Items","Enter mobile #")
+        return False
+
+    if len(frmbill.Scrolledtreeview1.get_children()) <=0:        
+        messagebox.showinfo("No Items","No Items")
+        return False   
 
 
     invno = frmbill.txtbillno['text']    

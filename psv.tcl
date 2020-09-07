@@ -456,7 +456,7 @@ proc vTclWindow.top45 {base} {
     }
     vTcl:copy_lock $site_3_0.but106
     ttk::combobox $site_3_0.tCo47 \
-        -values {Spare_Parts Service} -font TkTextFont -state readonly \
+        -values {Material Service} -font TkTextFont -state readonly \
         -textvariable varcboitemtype -foreground {} -background {} \
         -takefocus {} 
     vTcl:DefineAlias "$site_3_0.tCo47" "cboitemtype" vTcl:WidgetProc "Toplevel1" 1

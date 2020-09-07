@@ -112,6 +112,8 @@ class Combobox_Autocomplete(Entry, object):
             self.unpost_listbox()
             self.focus()
         else:
+            if len(entry_data) < 3:
+                return True
             values = finditem(entry_data)
             #kk
             #self.autocomplete_function(entry_data)

@@ -4,17 +4,21 @@ import sys
 from PyQt5.QtGui import QIcon
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter, QPrintPreviewDialog
 from PyQt5.Qt import QFileInfo
+from PyQt5.QtGui import *
+#from QtCore.QMarginsF import *
+
 
 def openprint(printtext):
     App = QApplication(sys.argv)
-    window = Window()
+    window = Window()    
+    #window.textEdit.setContentsMargins(1, 1, 1, 1)
     window.textEdit.setText(printtext)
     App.exec()
 
 class Window(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.title = "Print"
+        self.title = "Print - PSP CAR CARE INVOICE"
         self.top = 200
         self.left = 500
         self.width = 680
@@ -78,6 +82,11 @@ class Window(QMainWindow):
     def createEditor(self):
         self.textEdit = QTextEdit(self)
         self.textEdit.setText("test")
+
+        fixed_font = QFont("monospace")
+        fixed_font.setStyleHint(QFont.TypeWriter)
+        self.textEdit.setFont(fixed_font)
+
         self.setCentralWidget(self.textEdit)
 
     def fontDialog(self):
@@ -91,23 +100,35 @@ class Window(QMainWindow):
 
     def printDialog(self):
         printer = QPrinter(QPrinter.HighResolution)
+        printer.setFullPage(True)
+        printer.setPageMargins(0,0,0,0, QPrinter.Millimeter)
         dialog = QPrintDialog(printer, self)
         if dialog.exec_() == QPrintDialog.Accepted:
             self.textEdit.print_(printer)
     def printpreviewDialog(self):
         printer = QPrinter(QPrinter.HighResolution)
+        printer.setFullPage(True)
+        printer.setPageMargins(0,0,0,0, QPrinter.Millimeter)
         previewDialog = QPrintPreviewDialog(printer, self)
         previewDialog.paintRequested.connect(self.printPreview)
         previewDialog.exec_()
 
     def printPreview(self, printer):
+        printer.setFullPage(True)
+        printer.setPageMargins(0,0,0,0, QPrinter.Millimeter)
+        #self.textEdit.setContentsMargins(1, 1, 1, 1)
         self.textEdit.print_(printer)
+        
 
     def printPDF(self):
         fn, _ = QFileDialog.getSaveFileName(self, 'Export PDF', None, 'PDF files (.pdf);;All Files()')
         if fn != '':
             if QFileInfo(fn).suffix() == "" : fn += '.pdf'
             printer = QPrinter(QPrinter.HighResolution)
+            #printer.setPageMargins(QMarginF(0, 0, 0, 0))
+            
+            printer.setFullPage(True)
+            printer.setPageMargins(0,0,0,0, QPrinter.Millimeter)
             printer.setOutputFormat(QPrinter.PdfFormat)
             printer.setOutputFileName(fn)
             self.textEdit.document().print_(printer)
