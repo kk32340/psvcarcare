@@ -63,66 +63,70 @@ def getbill_details(invno):
 
 def savebill(frmbill):
     
-    vehicleno = frmbill.txtvehicleno.get('1.0','end-1c')
-    mobileno = frmbill.txtmobileno.get('1.0','end-1c')
-    kilometer = frmbill.txtkilometer.get('1.0','end-1c')
-    vehicleinfo = frmbill.txtvehicleinfo.get('1.0','end-1c')
+    try:
+
+        vehicleno = frmbill.txtvehicleno.get('1.0','end-1c')
+        mobileno = frmbill.txtmobileno.get('1.0','end-1c')
+        kilometer = frmbill.txtkilometer.get('1.0','end-1c')
+        vehicleinfo = frmbill.txtvehicleinfo.get('1.0','end-1c')
 
 
-    if len(vehicleno) <=0:        
-        messagebox.showinfo("No Items","vehicle # is Mandatory")
-        return False
+        if len(vehicleno) <=0:        
+            messagebox.showinfo("No Items","vehicle # is Mandatory")
+            return False
 
-    if len(mobileno) <=0:        
-        messagebox.showinfo("No Items","Enter mobile #")
-        return False
+        if len(mobileno) <=0:        
+            messagebox.showinfo("No Items","Enter mobile #")
+            return False
 
-    if len(kilometer) <=0:        
-        messagebox.showinfo("No Items","Enter Kilometer #")
-        return False
+        if len(kilometer) <=0:        
+            messagebox.showinfo("No Items","Enter Kilometer #")
+            return False
 
-    if len(vehicleinfo) <=0:        
-        messagebox.showinfo("No Items","Enter Make / Model #")
-        return False
+        if len(vehicleinfo) <=0:        
+            messagebox.showinfo("No Items","Enter Make / Model #")
+            return False
 
-    if len(frmbill.Scrolledtreeview1.get_children()) <=0:        
-        messagebox.showinfo("No Items","No Items")
-        return False
+        if len(frmbill.Scrolledtreeview1.get_children()) <=0:        
+            messagebox.showinfo("No Items","No Items")
+            return False
+            
+        invno = frmbill.txtbillno['text']    
+    
+        bill_list = bill()
+        bill_list.vehicleno = frmbill.txtvehicleno.get('1.0','end-1c')
+        bill_list.mobileno= frmbill.txtmobileno.get('1.0','end-1c')
+        bill_list.custname = frmbill.txtcustomerno.get('1.0','end-1c')
+        bill_list.custadd= frmbill.txtaddress.get('1.0','end-1c')
+        bill_list.vehicleinfo = frmbill.txtvehicleinfo.get('1.0','end-1c')
+        bill_list.kilometer = frmbill.txtkilometer.get('1.0','end-1c')
+        bill_list.date_created = datetime.now()
+        bill_list.date_modified = datetime.now()
+
+        if len(invno) > 0:
+            bill_list.invoiceno= invno
+        else:
+            bill_list.invoiceno = "INV" + str(bill.objects.count() +1 ).zfill(4)    
+
+        bill_list.items=[]
+
+        for child in frmbill.Scrolledtreeview1.get_children():   
+            bill_item=bill_item1()        
+            bill_item.slno=int(frmbill.Scrolledtreeview1.item(child)["values"][0])         
+            bill_item.itemno = str(frmbill.Scrolledtreeview1.item(child)["values"][1])  
+            bill_item.itemtype = str(frmbill.Scrolledtreeview1.item(child)["values"][2])  
+            bill_item.itemname= frmbill.Scrolledtreeview1.item(child)["values"][3]  
+            bill_item.uom=frmbill.Scrolledtreeview1.item(child)["values"][4]  
+            bill_item.qty=int(frmbill.Scrolledtreeview1.item(child)["values"][5]) 
+            bill_item.price=float(frmbill.Scrolledtreeview1.item(child)["values"][6]) 
+            bill_item.total=float(frmbill.Scrolledtreeview1.item(child)["values"][7])
+            bill_list.items.append(bill_item)
+
+        bill_list.save()
+        messagebox.showinfo("Create Invoice","Successfully created")
+
+        frmbill.txtbillno['text']=bill_list.invoiceno
         
-    invno = frmbill.txtbillno['text']    
-   
-    bill_list = bill()
-    bill_list.vehicleno = frmbill.txtvehicleno.get('1.0','end-1c')
-    bill_list.mobileno= frmbill.txtmobileno.get('1.0','end-1c')
-    bill_list.custname = frmbill.txtcustomerno.get('1.0','end-1c')
-    bill_list.custadd= frmbill.txtaddress.get('1.0','end-1c')
-    bill_list.vehicleinfo = frmbill.txtvehicleinfo.get('1.0','end-1c')
-    bill_list.kilometer = frmbill.txtkilometer.get('1.0','end-1c')
-    bill_list.date_created = datetime.now()
-    bill_list.date_modified = datetime.now()
-
-    if len(invno) > 0:
-        bill_list.invoiceno= invno
-    else:
-        bill_list.invoiceno = "INV" + str(bill.objects.count() +1 ).zfill(4)    
-
-    bill_list.items=[]
-
-    for child in frmbill.Scrolledtreeview1.get_children():   
-        bill_item=bill_item1()        
-        bill_item.slno=int(frmbill.Scrolledtreeview1.item(child)["values"][0])         
-        bill_item.itemno = str(frmbill.Scrolledtreeview1.item(child)["values"][1])  
-        bill_item.itemtype = str(frmbill.Scrolledtreeview1.item(child)["values"][2])  
-        bill_item.itemname= frmbill.Scrolledtreeview1.item(child)["values"][3]  
-        bill_item.uom=frmbill.Scrolledtreeview1.item(child)["values"][4]  
-        bill_item.qty=int(frmbill.Scrolledtreeview1.item(child)["values"][5]) 
-        bill_item.price=float(frmbill.Scrolledtreeview1.item(child)["values"][6]) 
-        bill_item.total=float(frmbill.Scrolledtreeview1.item(child)["values"][7])
-        bill_list.items.append(bill_item)
-
-    bill_list.save()
-    messagebox.showinfo("Create Invoice","Successfully created")
-
-    frmbill.txtbillno['text']=bill_list.invoiceno
-
+    except Exception as e:
+        messagebox.showerror("Error occured","%s" % e)
 disconnect(alias='db1')

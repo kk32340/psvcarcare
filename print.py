@@ -7,12 +7,12 @@ from PyQt5.Qt import QFileInfo
 from PyQt5.QtGui import *
 #from QtCore.QMarginsF import *
 
-
 def openprint(printtext):
     App = QApplication(sys.argv)
     window = Window()    
     #window.textEdit.setContentsMargins(1, 1, 1, 1)
-    window.textEdit.setText(printtext)
+    #window.textEdit.setText(printtext)
+    window.textEdit.setHtml(printtext)
     App.exec()
 
 class Window(QMainWindow):
@@ -109,6 +109,7 @@ class Window(QMainWindow):
         printer = QPrinter(QPrinter.HighResolution)
         printer.setFullPage(True)
         printer.setPageMargins(0,0,0,0, QPrinter.Millimeter)
+       
         previewDialog = QPrintPreviewDialog(printer, self)
         previewDialog.paintRequested.connect(self.printPreview)
         previewDialog.exec_()

@@ -2,6 +2,158 @@ from db import *
 from num2words import num2words 
 
 def getdocument(details):
+    bill="""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>        
+    </head>
+    <body>
+
+        <table width="100%">
+        <tr> 
+            <th colspan="2" align="left">PSP</th>
+        </tr> 
+        <tr> 
+            <th colspan="2" align="left">CAR CARE</th>
+        </tr> 
+        <tr> 
+            <th colspan="2" align="left">1223/6B, BY-PASS ROAD</th>
+        </tr> 
+        <tr> 
+            <th colspan="2" align="left">SHANMUGANATHI, PALANI-624 602</th>
+        </tr> 
+        <tr> 
+            <th width="70%"  align="left">EMAIL:pspcarcare@gmail.com</th>
+            <th width="30%"  align="left">{details.invoiceno}</th>
+        </tr>
+        <tr> 
+            <th width="70%"  align="left">PHONE NO: 9944429143, 9787703040</th>
+            <th width="30%"  align="left">{details.date_modified}</th>
+        </tr>
+        <tr>
+            <td colspan='2' width='100%'>  
+            <hr/>               
+            </td>
+        </tr>
+        <tr>
+            <td align="center" colspan="2">
+                RETAIL CASH BILL
+            </td>
+        </tr>
+
+        <tr> 
+            <th width="70%"  align="left">{details.custname}</th>
+            <th width="30%"  align="left">{details.vehicleno}</th>
+        </tr>
+
+        <tr> 
+            <th width="70%"  align="left">{details.custadd}</th>
+            <th width="30%"  align="left">{details.vehicleinfo}</th>
+        </tr>
+
+        <tr> 
+            <th width="70%"  align="left">{details.mobileno}</th>
+            <th width="30%"  align="left">{details.kilometer}</th>
+        </tr>
+    </table>
+    
+     
+    </body>
+    </html>
+
+    """
+    
+
+    bill = bill.replace("{details.invoiceno}","INVOICE NO:" + details.invoiceno)
+    bill = bill.replace("{details.date_modified}","INVOICEDATE:" + details.date_modified.strftime("%m/%d/%Y"))
+    bill = bill.replace("{details.custname}","CUSTOMER NAME: "+details.custname)
+    bill = bill.replace("{details.vehicleno}","VEHICLE REG. No:" + details.vehicleno)
+    bill = bill.replace("{details.custadd}","ADDRESS: "+details.custadd)
+    bill = bill.replace("{details.vehicleinfo}","MAKE / MODEL:" + details.vehicleinfo)
+    bill = bill.replace("{details.mobileno}","PHONE NO.: "+details.mobileno)
+    bill = bill.replace("{details.kilometer}","KILO METER:" + details.kilometer)
+
+
+    bill2="""
+    <table  
+           width="100%"> 
+        <tr>
+            <td colspan='6' width='100%'>  
+            <hr/>              
+            </td>
+        </tr>
+        <tr> 
+            <th width='5%' align="left">S.No</th> 
+            <th width='55%' align="left">ITEM DESCRIPTION</th> 
+            <th width='10%' align="left">UNIT</th> 
+            <th width='10%' align="right">QUANTITY</th> 
+            <th width='10%' align="right">AMOUNT</th> 
+            <th width='10%' align="right">TOTAL</th> 
+        </tr> 
+        <tr>
+            <td colspan='6' width='100%'>  
+            <hr/>              
+            </td>
+        </tr>
+    """  
+
+    
+    gtotal=0
+    material_item_index=0
+    htmlstr=""
+    for i in details.items:
+        if i.itemtype=="Material":
+            material_item_index +=1
+            gtotal += i.total
+            htmlstr += "<tr>"
+            htmlstr += "<td width='5%'>" + str(material_item_index) + "</td>" 
+            htmlstr += "<td width='55%'>" + i.itemname.upper() + "</td>"  
+            htmlstr += "<td width='10%'>" + i.uom.upper() + "</td>" 
+            htmlstr += "<td align='right' width='10%'>" + str(i.qty) + "</td>" 
+            htmlstr += "<td align='right' width='10%'>" + str(i.price) + "</td>" 
+            htmlstr += "<td align='right' width='10%'>" + str(i.total) + "</td>"          
+            htmlstr += "</tr>"
+    
+    htmlstr +="<tr><td width='100%' align='right' colspan='6'>"+ "Total:" + str(gtotal) +"</td></tr>"
+
+    service_item_index=0
+    for i in details.items:
+        if i.itemtype=="Labour":
+            service_item_index +=1
+            if service_item_index==1:                
+                htmlstr +="<tr><td width='10%' align='center' colspan='6'>" + "Labour charges:" +"</td></tr>"
+            gtotal += i.total
+
+            htmlstr += "<tr>"
+            htmlstr += "<td width='5%'>" + str(service_item_index) + "</td>" 
+            htmlstr += "<td colspan='4' width='85%'>" + i.itemname.upper() + "</td>"
+            htmlstr += "<td align='right' width='10%'>" + str(i.total) + "</td>"          
+            htmlstr += "</tr>"
+
+    htmlstr +="""
+        <tr>
+            <td colspan='6' width='100%'>  
+            <hr/>               
+            </td>
+        </tr>
+    """
+    htmlstr +="<tr><td width='80%' colspan='4'>"+ num2words(gtotal, lang ='en') +"</td><td width='20%' colspan='2'>"+ "Total:" + str(gtotal) +"</td></tr>"
+
+    htmlstr +="""
+        <tr>
+            <td colspan='6' width='100%'>  
+            <hr/>               
+            </td>
+        </tr>
+    """
+
+    htmlstr +="<tr><td width='100%' align='right' colspan='6'>"+ "For PSP CAR CARE" +"</td></tr>"
+
+    
+
+    return bill + bill2 + htmlstr + "</table>"
+
+def getdocument1(details):
     bill=""
     bill += "PSP"
     bill += "\n" + "CAR CARE"
