@@ -32,6 +32,7 @@ class bill(Document):
     custname = StringField(max_length=50)
     custadd= StringField(max_length=200)
     vehicleinfo = StringField(max_length=100)
+    kilometer = StringField(max_length=100)
     invoiceno= StringField(primary_key=True)
     items = ListField(EmbeddedDocumentField(bill_item1))
     date_created = DateTimeField()
@@ -64,7 +65,10 @@ def savebill(frmbill):
     
     vehicleno = frmbill.txtvehicleno.get('1.0','end-1c')
     mobileno = frmbill.txtmobileno.get('1.0','end-1c')
-    
+    kilometer = frmbill.txtkilometer.get('1.0','end-1c')
+    vehicleinfo = frmbill.txtvehicleinfo.get('1.0','end-1c')
+
+
     if len(vehicleno) <=0:        
         messagebox.showinfo("No Items","vehicle # is Mandatory")
         return False
@@ -73,11 +77,18 @@ def savebill(frmbill):
         messagebox.showinfo("No Items","Enter mobile #")
         return False
 
+    if len(kilometer) <=0:        
+        messagebox.showinfo("No Items","Enter Kilometer #")
+        return False
+
+    if len(vehicleinfo) <=0:        
+        messagebox.showinfo("No Items","Enter Make / Model #")
+        return False
+
     if len(frmbill.Scrolledtreeview1.get_children()) <=0:        
         messagebox.showinfo("No Items","No Items")
-        return False   
-
-
+        return False
+        
     invno = frmbill.txtbillno['text']    
    
     bill_list = bill()
@@ -86,6 +97,7 @@ def savebill(frmbill):
     bill_list.custname = frmbill.txtcustomerno.get('1.0','end-1c')
     bill_list.custadd= frmbill.txtaddress.get('1.0','end-1c')
     bill_list.vehicleinfo = frmbill.txtvehicleinfo.get('1.0','end-1c')
+    bill_list.kilometer = frmbill.txtkilometer.get('1.0','end-1c')
     bill_list.date_created = datetime.now()
     bill_list.date_modified = datetime.now()
 

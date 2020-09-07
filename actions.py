@@ -34,6 +34,7 @@ def widget_return(event, obj):
 
 def add_return(event, obj):    
     additem()
+    frmbill.cboitemtype.focus()
 
 def find_return(event, obj):
     window = tk.Toplevel(root)
@@ -154,11 +155,14 @@ def updateUIAttributes(top, root):
 
     frmbill.txtcustomerno.bind("<Tab>", lambda event, obj=frmbill.txtaddress: focus_next_widget(event, obj))
     frmbill.txtaddress.bind("<Tab>", lambda event, obj=frmbill.txtvehicleinfo: focus_next_widget(event, obj))
-    frmbill.txtvehicleinfo.bind("<Tab>", lambda event, obj=frmbill.cboitemname: focus_next_widget(event, obj))
+    frmbill.txtvehicleinfo.bind("<Tab>", lambda event, obj=frmbill.txtkilometer: focus_next_widget(event, obj))
 
+    frmbill.txtkilometer.bind("<Tab>", lambda event, obj=frmbill.cboitemtype: focus_next_widget(event, obj))
+    
     frmbill.txtcustomerno.bind("<Return>", lambda event, obj=frmbill.txtcustomerno: widget_return(event,obj))
 
     frmbill.lblitemslno['text']=""
+    frmbill.labeltottxt['text']="0.0"
 
     frmbill.cboitemtype.bind("<Return>", lambda event, obj=frmbill.cboitemtype: widget_return(event,obj))
     frmbill.cboitemtype.bind("<Tab>", lambda event, obj=frmbill.cboitemname: focus_next_widget(event, obj)) 
@@ -171,7 +175,7 @@ def updateUIAttributes(top, root):
     frmbill.cbouom.bind("<Return>", lambda event, obj=frmbill.cbouom: widget_return(event,obj))
     frmbill.cbouom.bind("<Tab>", lambda event, obj=frmbill.txtqty: focus_next_widget(event, obj)) 
     frmbill.cbouom.configure(textvariable=psv_support.varcbouom)
-    uom_value_list = ['NOS','KG','LTR']
+    uom_value_list = ['NOS','LTR']
     frmbill.cbouom.configure(values=uom_value_list)
     frmbill.cbouom.configure(state='readonly')
 
@@ -280,9 +284,10 @@ def newitem():
     # frmbill.txtvehicleno.delete('1.0','end')    
     #frmbill.txtmobileno.delete('1.0','end')    
     frmbill.txtbillno['text']=""
+
     #frmbill.txtcustomerno.delete('1.0','end')    
-    #frmbill.txtaddress.delete('1.0','end')    
-    #frmbill.txtvehicleinfo.delete('1.0','end')
+    #frmbill.txtaddress.delete('1.0','end')
+    frmbill.txtkilometer.delete('1.0','end')
     clearitem()
     frmbill.Scrolledtreeview1.delete(*frmbill.Scrolledtreeview1.get_children())
     g_total()
@@ -309,6 +314,13 @@ def loadinv(invno):
 
         frmbill.txtvehicleinfo.delete('1.0','end')
         frmbill.txtvehicleinfo.insert('1.0',data.vehicleinfo)
+
+        if data.kilometer != None:
+            frmbill.txtkilometer.delete('1.0','end')
+            frmbill.txtkilometer.insert('1.0',data.kilometer)
+        else:
+            frmbill.txtkilometer.delete('1.0','end')
+
         # print(data.items)
         # return False
         values = get_item_duple(data.items)
@@ -356,10 +368,11 @@ def additem():
     itemname=frmbill.cboitemname.get_value()
     if len(itemname) > 0:
         if len(item.objects(itemname=itemname)) <=0:        
-            if messagebox.askyesno("New Item","Item does not exists \n, do you want to create new item?"):
+            if messagebox.askyesno("New Item","Item does not exists.\nDo you want to create new item?"):
                 addnewItem(itemname)
             else:
                 return False
+                
 
     #val = validateitem(frmbill)
     #print(itemname)
