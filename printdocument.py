@@ -10,15 +10,13 @@ def getdocument(details):
     <body>
 
         <table width="100%">
+       
         <tr> 
-            <th colspan="2" align="left">PSP</th>
-        </tr> 
-        <tr> 
-            <th colspan="2" align="left">CAR CARE</th>
+            <th colspan="2" align="left">PSP CAR CARE</th>
         </tr> 
         <tr> 
             <th colspan="2" align="left">1223/6B, BY-PASS ROAD</th>
-        </tr> 
+        </tr>  
         <tr> 
             <th colspan="2" align="left">SHANMUGANATHI, PALANI-624 602</th>
         </tr> 
