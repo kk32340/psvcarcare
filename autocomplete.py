@@ -1,5 +1,6 @@
 import re
 from db import *
+from actions_1 import find_price
 
 try:
     from Tkinter import StringVar, Entry, Frame, Listbox, Scrollbar
@@ -89,6 +90,7 @@ class Combobox_Autocomplete(Entry, object):
 
         self.bind("<Return>", self._update_entry_from_listbox)
         self.bind("<Escape>", lambda event: self.unpost_listbox())
+        #self.bind("<FocusOut>", lambda event: self.unpost_listbox())
         
     def _on_tab(self, event):
         #self.post_listbox()
@@ -208,6 +210,9 @@ class Combobox_Autocomplete(Entry, object):
         self._entry_var.trace_vdelete("w", self._trace_id)
         self._entry_var.set(text)
         self._trace_id = self._entry_var.trace('w', self._on_change_entry_var)
+        if len(text) > 0:
+            find_price(text)
+        #kk
 
     def _update_entry_from_listbox(self, event):
         if self._listbox is not None:

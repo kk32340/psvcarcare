@@ -12,13 +12,16 @@ def getdocument(details):
         <table width="100%">
        
         <tr> 
-            <th colspan="2" align="left">PSP CAR CARE</th>
+            <th width="70%" align="left">PSP CAR CARE</th>
+            <th width="30%" rowspan="3" align="left">
+                <img src="./image/logo.jpg"/>
+            </th>
         </tr> 
         <tr> 
-            <th colspan="2" align="left">1223/6B, BY-PASS ROAD</th>
+            <th width="70%" colspan="2" align="left">1223/6B, BY-PASS ROAD</th>
         </tr>  
         <tr> 
-            <th colspan="2" align="left">SHANMUGANATHI, PALANI-624 602</th>
+            <th width="70%" colspan="2" align="left">SHANMUGANATHI, PALANI-624 602</th>
         </tr> 
         <tr> 
             <th width="70%"  align="left">EMAIL:pspcarcare@gmail.com</th>
@@ -29,14 +32,14 @@ def getdocument(details):
             <th width="30%"  align="left">{details.date_modified}</th>
         </tr>
         <tr>
-            <td colspan='2' width='100%'>  
-            <hr/>               
-            </td>
+            <th colspan='2' width='100%' style="border-bottom-style: solid;border-width: 1px;">  
+                           
+            </th>
         </tr>
-        <tr>
-            <td align="center" colspan="2">
-                RETAIL CASH BILL
-            </td>
+        <tr style="border-color:black" border-color="black">
+            <th align="center" colspan="2">
+                <h3>RETAIL CASH BILL</h3>
+            </th>
         </tr>
 
         <tr> 
@@ -54,11 +57,6 @@ def getdocument(details):
             <th width="30%"  align="left">{details.kilometer}</th>
         </tr>
     </table>
-    
-     
-    </body>
-    </html>
-
     """
     
 
@@ -76,22 +74,20 @@ def getdocument(details):
     <table  
            width="100%"> 
         <tr>
-            <td colspan='6' width='100%'>  
-            <hr/>              
-            </td>
+            <th colspan='17' width='100%' style="border-bottom-style: solid;border-width: 1px;"> 
+            </th>
         </tr>
         <tr> 
-            <th width='5%' align="left">S.No</th> 
-            <th width='55%' align="left">ITEM DESCRIPTION</th> 
-            <th width='10%' align="left">UNIT</th> 
-            <th width='10%' align="right">QUANTITY</th> 
-            <th width='10%' align="right">AMOUNT</th> 
-            <th width='10%' align="right">TOTAL</th> 
+            <th colspan='1' align="left">S.No</th> 
+            <th colspan='8'  align="left">ITEM DESCRIPTION</th> 
+            <th colspan='2'  align="right">QUANTITY</th>
+            <th colspan='2'  align="right">UNIT</th>
+            <th colspan='2'  align="right">AMOUNT</th> 
+            <th  colspan='2' align="right">TOTAL</th> 
         </tr> 
         <tr>
-            <td colspan='6' width='100%'>  
-            <hr/>              
-            </td>
+            <th colspan='17' width='100%' style="border-bottom-style: solid;border-width: 1px;">
+            </th>
         </tr>
     """  
 
@@ -104,52 +100,70 @@ def getdocument(details):
             material_item_index +=1
             gtotal += i.total
             htmlstr += "<tr>"
-            htmlstr += "<td width='5%'>" + str(material_item_index) + "</td>" 
-            htmlstr += "<td width='55%'>" + i.itemname.upper() + "</td>"  
-            htmlstr += "<td width='10%'>" + i.uom.upper() + "</td>" 
-            htmlstr += "<td align='right' width='10%'>" + str(i.qty) + "</td>" 
-            htmlstr += "<td align='right' width='10%'>" + str(i.price) + "</td>" 
-            htmlstr += "<td align='right' width='10%'>" + str(i.total) + "</td>"          
+            htmlstr += "<th colspan='1' align='left' >" + str(material_item_index) + "</th>" 
+            htmlstr += "<th colspan='8' align='left' >" + i.itemname.upper() + "</th>"  
+            htmlstr += "<th colspan='2' align='right' >" + str(i.qty) + "</th>" 
+            htmlstr += "<th colspan='2' align='right' >" + i.uom.upper() + "</th>"            
+            htmlstr += "<th colspan='2' align='right' >" + str(i.price) + "</th>" 
+            htmlstr += "<th colspan='2' align='right' >" + str(i.total) + "</th>"          
             htmlstr += "</tr>"
     
-    htmlstr +="<tr><td width='100%' align='right' colspan='6'>"+ "Total:" + str(gtotal) +"</td></tr>"
+    gtotal=float("{:.2f}".format(gtotal))
+
+    htmlstr +="<tr><th colspan='15'></th><th  align='right' colspan='2' style='border-bottom-style: solid;border-width: 1px;'></th></tr>"
+
+    htmlstr +="<tr><th colspan='10'></th><th  align='right' colspan='7' ><h3>"+ "Total:" + str(gtotal) +"</h3></th></tr>"
 
     service_item_index=0
     for i in details.items:
         if i.itemtype=="Labour":
             service_item_index +=1
             if service_item_index==1:                
-                htmlstr +="<tr><td width='10%' align='center' colspan='6'>" + "Labour charges:" +"</td></tr>"
+                htmlstr +="<tr><th width='10' align='center' colspan='17'>" + "<h3>LABOUR CHARGES:</h3>" +"</th></tr>"
             gtotal += i.total
 
             htmlstr += "<tr>"
-            htmlstr += "<td width='5%'>" + str(service_item_index) + "</td>" 
-            htmlstr += "<td colspan='4' width='85%'>" + i.itemname.upper() + "</td>"
-            htmlstr += "<td align='right' width='10%'>" + str(i.total) + "</td>"          
+            htmlstr += "<th align='left' colspan='1'>" + str(service_item_index) + "</th>" 
+            htmlstr += "<th align='left' colspan='14' width='85%'>" + i.itemname.upper() + "</th>"
+            htmlstr += "<th align='right' colspan='2'>" + str(i.total) + "</th>"          
             htmlstr += "</tr>"
 
     htmlstr +="""
-        <tr>
-            <td colspan='6' width='100%'>  
-            <hr/>               
-            </td>
+        <tr >
+            <th colspan='17' width='100%' style="border-bottom-style: solid;border-width: 1px;"> 
+            </th>
         </tr>
     """
-    htmlstr +="<tr><td width='80%' colspan='4'>"+ num2words(gtotal, lang ='en') +"</td><td width='20%' colspan='2'>"+ "Total:" + str(gtotal) +"</td></tr>"
+    gtotal=float("{:.2f}".format(gtotal))
+
+    htmlstr +="<tr><th colspan='10'>"+ num2words(gtotal, lang ='en') +"</th><th align='right' colspan='7'><h3>"+ "Total:" + str(gtotal) +"</h3></th></tr>"
 
     htmlstr +="""
         <tr>
-            <td colspan='6' width='100%'>  
-            <hr/>               
-            </td>
+            <th colspan='17' width='100%' style="border-bottom-style: solid;border-width: 1px;">                             
+            </th>
         </tr>
     """
+    htmlstr +="""
+        <tr>
+            <th colspan='17'>
+            </br>                  
+            </th>
+        </tr>
+     """
 
-    htmlstr +="<tr><td width='100%' align='right' colspan='6'>"+ "For PSP CAR CARE" +"</td></tr>"
+    htmlstr +="<tr><th width='100%' align='right' colspan='17'>"+ "For PSP CAR CARE" +"</th></tr>"
 
-    
+    returnstr=bill + bill2 + htmlstr + "</table>"
 
-    return bill + bill2 + htmlstr + "</table>"
+    returnstr +="</body></html>"
+
+    # f = open("test1.html", "a")
+    # f.write(returnstr)
+    # f.close()
+
+
+    return returnstr
 
 def getdocument1(details):
     bill=""

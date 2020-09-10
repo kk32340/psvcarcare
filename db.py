@@ -7,8 +7,10 @@ from datetime import datetime
 connect('psv', alias='db1',username='psv',password='psv')
 
 class item(Document):
-    itemno = StringField(max_length=20)
+    itemno = StringField(primary_key=True)
+    #itemno = StringField(max_length=50)
     itemname = StringField(max_length=100)
+    price=FloatField()
     meta = {'db_alias': 'db1'}
 
 # class item_used(EmbeddedDocument):
@@ -22,7 +24,7 @@ class bill_item1(EmbeddedDocument):
     itemname= StringField(max_length=150)    
     itemtype= StringField(max_length=50)  
     uom=StringField(max_length=10)
-    qty=IntField()
+    qty=FloatField()
     price=FloatField()
     total=FloatField()
     
@@ -39,15 +41,39 @@ class bill(Document):
     date_modified = DateTimeField()
     meta = {'db_alias': 'db1'}
 
-def addnewItem(itemname):
+def addnewItem(itemname, price):
     newitem = item(itemname=itemname)
     if len(newitem) <=0:
         newitem = item()
     itemno =  "I" + str(item.objects.count() +1 ).zfill(5)
     newitem.itemno = itemno
     newitem.itemname = itemname
+    newitem.price = price
     newitem.save()
     return itemno
+
+
+def finditem_price(itemname): 
+    if len(itemname) > 0:  
+        item_price = [i.price for i in item.objects(itemname=itemname)]
+        if len(item_price) >0:
+            if item_price[0] != None:
+                return item_price[0]
+    return 0.0
+
+def db_update_item_price(itemno, itemname, itemprice):
+    newitem = item(itemno=itemno)  
+    if len(newitem) >0:
+        if newitem.price==None:
+            #print("None price")
+            item.objects(itemname=itemname).delete()
+            newitem = item()          
+     
+    itemno =  itemno
+    newitem.itemno = itemno
+    newitem.itemname = itemname
+    newitem.price = itemprice
+    newitem.save()
 
 def finditem(search):   
     return [i.itemname for i in item.objects(itemname__icontains=search)]
@@ -117,7 +143,7 @@ def savebill(frmbill):
             bill_item.itemtype = str(frmbill.Scrolledtreeview1.item(child)["values"][2])  
             bill_item.itemname= frmbill.Scrolledtreeview1.item(child)["values"][3]  
             bill_item.uom=frmbill.Scrolledtreeview1.item(child)["values"][4]  
-            bill_item.qty=int(frmbill.Scrolledtreeview1.item(child)["values"][5]) 
+            bill_item.qty=float(frmbill.Scrolledtreeview1.item(child)["values"][5]) 
             bill_item.price=float(frmbill.Scrolledtreeview1.item(child)["values"][6]) 
             bill_item.total=float(frmbill.Scrolledtreeview1.item(child)["values"][7])
             bill_list.items.append(bill_item)

@@ -11,6 +11,7 @@ from mongoengine.context_managers import switch_collection
 from db import *
 from psv import *
 from printdocument import *
+from actions_1 import update_form_main
 
 def focus_next_widget(event,obj):
     obj.focus()
@@ -64,6 +65,27 @@ def numbers1 (event, obj):
     except ValueError:
         if v!="\x08" and v!="":
             return "break"
+
+def focusout(event, obj):    
+    qty = frmbill.txtqty.get('1.0','end-1c')
+    if len(qty) ==0:
+        qty="0.0"        
+    
+    price = frmbill.txtprice.get('1.0','end-1c')
+    if len(price) ==0:
+        price="0.0"
+
+    qtyval=float(qty)
+    priceval=float(price)
+
+    #priceval=float("{:.2f}".format(priceval))
+
+    totalval = float(qtyval * priceval)
+
+    totalval=float("{:.2f}".format(totalval))    
+
+    frmbill.txttotal.delete('1.0','end')
+    frmbill.txttotal.insert('1.0',str(totalval))
 
 def floatonly (event, obj):
     v = event.char    
@@ -134,10 +156,14 @@ def updateUIAttributes(top, root):
     global parentroot
     frmbill=top
     parentroot = root
+    update_form_main(top)
     frmbill.btnadditem.configure(command=additem)
     frmbill.btnclear.configure(command=clearitem)
     frmbill.btnsave.configure(command=saveitem)
     frmbill.btnnewbill.configure(command=newitem)
+    frmbill.btnmodifybill.configure(command=clearall)
+    
+
     frmbill.btndelete.configure(command=del_treeview_item)
         
     frmbill.btnfind.configure(command=findbill)   
@@ -182,9 +208,12 @@ def updateUIAttributes(top, root):
     frmbill.txtqty.bind("<Return>", lambda event, obj=frmbill.txtqty: widget_return(event,obj))
     frmbill.txtqty.bind("<Tab>", lambda event, obj=frmbill.txtprice: focus_next_widget(event, obj))
    
-    frmbill.txtqty.bind("<KeyPress>", lambda event, obj=frmbill.txtqty: numbers1(event,obj))
+    frmbill.txtqty.bind("<KeyPress>", lambda event, obj=frmbill.txtqty: floatonly(event,obj))
     frmbill.txtprice.bind("<KeyPress>", lambda event, obj=frmbill.txtprice: floatonly(event,obj))
 
+    frmbill.txtqty.bind("<FocusOut>", lambda event, obj=frmbill.txtqty: focusout(event,obj))
+    frmbill.txtprice.bind("<FocusOut>", lambda event, obj=frmbill.txtqty: focusout(event,obj))
+     
     frmbill.txtprice.bind("<Return>", lambda event, obj=frmbill.txtprice: widget_return(event,obj))
     frmbill.txtprice.bind("<Tab>", lambda event, obj=frmbill.txttotal: focus_next_widget(event, obj)) 
 
@@ -236,6 +265,8 @@ def findbill():
     y=parentroot.winfo_rooty()
     #h=parentroot.winfo_height()
     window = tk.Toplevel(parentroot)
+    global inv_window
+    inv_window = window
     #window.geometry("200x200") 
     window.geometry("+%d+%d" % (x+450,
                           y+70
@@ -277,8 +308,22 @@ def invDoubleClick(event, treeview):
     #print(event)
     item=treeview.identify('item',event.x,event.y)    
     #print(item)
-    loadinv(item)
+    loadinv(item)   
+    inv_window.destroy()
+    inv_window.update()
+
     #selitem=treeview.identify.item(item,"values")
+
+def clearall():
+    frmbill.txtvehicleno.delete('1.0','end')    
+    frmbill.txtmobileno.delete('1.0','end')    
+    frmbill.txtbillno['text']=""
+    frmbill.txtcustomerno.delete('1.0','end')    
+    frmbill.txtaddress.delete('1.0','end')
+    frmbill.txtkilometer.delete('1.0','end')
+    clearitem()
+    frmbill.Scrolledtreeview1.delete(*frmbill.Scrolledtreeview1.get_children())
+    g_total()
 
 def newitem():
     # frmbill.txtvehicleno.delete('1.0','end')    
@@ -361,17 +406,70 @@ def del_treeview_item():
         for i in frmbill.Scrolledtreeview1.get_children():
             if slno == i:
                 frmbill.Scrolledtreeview1.delete(i)
+                update_treevie()
     g_total()
+    clearitem()
+    
+def update_treevie():   
+    list=[] 
+    slno=0
+    for child in frmbill.Scrolledtreeview1.get_children():
+        #print(i)
+        slno +=1
+        
+        #frmbill.Scrolledtreeview1.item(child)["values"][0]=slno
+        #tuple()
+        item_list = frmbill.Scrolledtreeview1.item(child)["values"]
+        item_list[0]=slno
+        list.append(tuple(item_list))
 
+    for child in frmbill.Scrolledtreeview1.get_children():
+        frmbill.Scrolledtreeview1.delete(child)
+
+    for i in list:
+        #print(i)
+        values=i
+        frmbill.Scrolledtreeview1.insert("",'end', iid=str(values[0]),text="L1",values=values)
+        #list.append((i.slno, i.itemno, i.itemtype, i.itemname, i.uom, i.qty, i.price, i.total))
+    #return list
 
 def additem():
     itemname=frmbill.cboitemname.get_value()
     if len(itemname) > 0:
-        if len(item.objects(itemname=itemname)) <=0:        
+        item_db = item.objects(itemname=itemname)
+        if len(item_db) <=0:        
             if messagebox.askyesno("New Item","Item does not exists.\nDo you want to create new item?"):
-                addnewItem(itemname)
+                price_str = frmbill.txtprice.get('1.0','end-1c')
+                price=0.0
+                if len(price_str) > 0:
+                    price = float(price_str)
+                else:
+                    price=0.0
+                addnewItem(itemname, price)
             else:
                 return False
+        else:
+            #print(item_db)
+            price_str = frmbill.txtprice.get('1.0','end-1c')
+            price=0.0
+            if len(price_str) > 0:
+                price = float(price_str)
+            else:
+                price=0.0
+
+            item_itemno = item_db[0].itemno
+            item_price = 0.0
+            #print(item_db)
+            if item_db[0].price != None:
+                item_price = item_db[0].price
+                if item_price != price:                
+                    db_update_item_price(item_itemno,itemname, price)
+                    #print("changes")
+            else:
+                # print(item_itemno)
+                # print(price)
+                db_update_item_price(item_itemno,itemname, price)
+                #print("none")
                 
 
     #val = validateitem(frmbill)
@@ -422,7 +520,7 @@ def OnDoubleClick(event):
 
     frmbill.txtitemno.delete('1.0','end')
     frmbill.txtqty.delete('1.0','end')
-    frmbill.txtprice.delete('1.0','end')
+    
     frmbill.txttotal.delete('1.0','end')
 
     #print(selitem[0])
@@ -440,7 +538,10 @@ def OnDoubleClick(event):
     frmbill.cboitemname.set_value(selitem[3])
     psv_support.varcbouom.set(selitem[4])
 
+    #print(selitem[6])
     frmbill.txtqty.insert('1.0',selitem[5])
+
+    frmbill.txtprice.delete('1.0','end')
     frmbill.txtprice.insert('1.0',selitem[6])
     frmbill.txttotal.insert('1.0',selitem[7])
 

@@ -171,10 +171,10 @@ class Toplevel1:
         self.findvehicle.configure(highlightbackground="#d9d9d9")
         self.findvehicle.configure(highlightcolor="black")
 
-        # self.btnmodifybill = ttk.Button(self.findvehicle)
-        # self.btnmodifybill.place(relx=0.24, rely=0.2, height=25, width=166)
-        # self.btnmodifybill.configure(takefocus="")
-        # self.btnmodifybill.configure(text='''Modify Bill''')
+        self.btnmodifybill = ttk.Button(self.findvehicle)
+        self.btnmodifybill.place(relx=0.24, rely=0.2, height=25, width=166)
+        self.btnmodifybill.configure(takefocus="")
+        self.btnmodifybill.configure(text='''Clear All''')
 
         self.lblbillno = tk.Label(self.findvehicle)
         self.lblbillno.place(relx=0.459, rely=0.2, height=19, width=82)
@@ -412,8 +412,8 @@ class Toplevel1:
         self.txtqty.configure(selectforeground="white")
         self.txtqty.configure(wrap="word")
         self.tooltip_font = "TkDefaultFont"
-        self.txtqty_tooltip = \
-        ToolTip(self.txtqty, self.tooltip_font, '''Enter item Quantity''')
+        #self.txtqty_tooltip = \
+        #ToolTip(self.txtqty, self.tooltip_font, '''Enter item Quantity''')
 
         self.txtprice = tk.Text(self.Frame1)
         self.txtprice.place(relx=0.728, rely=0.389, relheight=0.034
@@ -428,8 +428,8 @@ class Toplevel1:
         self.txtprice.configure(selectforeground="white")
         self.txtprice.configure(wrap="word")
         self.tooltip_font = "TkDefaultFont"
-        self.txtprice_tooltip = \
-        ToolTip(self.txtprice, self.tooltip_font, '''Price''')
+        #self.txtprice_tooltip = \
+        #ToolTip(self.txtprice, self.tooltip_font, '''Price''')
 
         self.txttotal = tk.Text(self.Frame1)
         self.txttotal.place(relx=0.805, rely=0.389, relheight=0.034
@@ -450,8 +450,8 @@ class Toplevel1:
         self.cbouom.configure(textvariable=psv_support.varcbouom)
         self.cbouom.configure(takefocus="")
         self.tooltip_font = "TkDefaultFont"
-        self.cbouom_tooltip = \
-        ToolTip(self.cbouom, self.tooltip_font, '''Select UOM''')
+        #self.cbouom_tooltip = \
+        #ToolTip(self.cbouom, self.tooltip_font, '''Select UOM''')
 
         self.btnadditem = tk.Button(self.Frame1)
         self.btnadditem.place(relx=0.885, rely=0.384, height=24, width=27)
