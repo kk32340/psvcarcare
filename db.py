@@ -9,19 +9,19 @@ connect('psv', alias='db1',username='psv',password='psv')
 class item(Document):
     itemno = StringField(primary_key=True)
     #itemno = StringField(max_length=50)
-    itemname = StringField(max_length=100)
+    itemname = StringField(max_length=550)
     price=FloatField()
     meta = {'db_alias': 'db1'}
 
 # class item_used(EmbeddedDocument):
 #     itemno = StringField(max_length=20)
-#     itemname = StringField(max_length=100)
+#     itemname = StringField(max_length=550)
 #     meta = {'db_alias': 'db1'}
 
 class bill_item1(EmbeddedDocument):    
     slno = IntField()
     itemno= StringField(max_length=20)
-    itemname= StringField(max_length=150)    
+    itemname= StringField(max_length=550)    
     itemtype= StringField(max_length=50)  
     uom=StringField(max_length=10)
     qty=FloatField()
