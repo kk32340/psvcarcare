@@ -110,9 +110,9 @@ def getdocument(details):
     
     gtotal=float("{:.2f}".format(gtotal))
 
-    htmlstr +="<tr><th colspan='15'></th><th  align='right' colspan='2' style='border-bottom-style: solid;border-width: 1px;'></th></tr>"
+    #htmlstr +="<tr><th colspan='15'></th><th  align='right' colspan='2' style='border-bottom-style: solid;border-width: 1px;'></th></tr>"
 
-    htmlstr +="<tr><th colspan='10'></th><th  align='right' colspan='7' ><h3>"+ "Total:" + str(gtotal) +"</h3></th></tr>"
+    #htmlstr +="<tr><th colspan='10'></th><th  align='right' colspan='7' ><h3>"+ "Total:" + str(gtotal) +"</h3></th></tr>"
 
     service_item_index=0
     for i in details.items:
