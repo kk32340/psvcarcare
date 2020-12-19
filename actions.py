@@ -94,9 +94,17 @@ def floatonly (event, obj):
         # if obj.get('1.0','end-1c').count('.') > 1:
         #     return "break"
 
+        val1=obj.get('1.0','end-1c')
+        val1= str(val1) + str(v)
+        #print(val1.count('.'))
+
+        if val1.count('.') > 1:
+            return "break"
+
         if v==".":
             return True
         v = float(v)
+
     except ValueError:
         if v!="\x08" and v!="":
             return "break"
@@ -192,10 +200,13 @@ def updateUIAttributes(top, root):
 
     frmbill.cboitemtype.bind("<Return>", lambda event, obj=frmbill.cboitemtype: widget_return(event,obj))
     frmbill.cboitemtype.bind("<Tab>", lambda event, obj=frmbill.cboitemname: focus_next_widget(event, obj)) 
+    frmbill.cboitemtype.bind("<Return>", lambda event, obj=frmbill.cboitemname: focus_next_widget(event, obj)) 
+    
     frmbill.cboitemtype.configure(textvariable=psv_support.varcboitemtype)
 
     # frmbill.cboitemname.bind("<Return>", lambda event, obj=frmbill.cboitemname: widget_return(event,obj))
     frmbill.cboitemname.bind("<Tab>", lambda event, obj1=frmbill.cboitemname, obj=frmbill.cbouom: focus_next_widget1(event,obj1, obj)) 
+    #frmbill.cboitemname.bind("<Return>", lambda event, obj1=frmbill.cboitemname, obj=frmbill.cbouom: focus_next_widget1(event,obj1, obj)) 
     # frmbill.cboitemname.configure(textvariable=psv_support.varcboitemname)
 
     frmbill.cbouom.bind("<Return>", lambda event, obj=frmbill.cbouom: widget_return(event,obj))
@@ -321,6 +332,7 @@ def clearall():
     frmbill.txtcustomerno.delete('1.0','end')    
     frmbill.txtaddress.delete('1.0','end')
     frmbill.txtkilometer.delete('1.0','end')
+    frmbill.txtvehicleinfo.delete('1.0','end')
     clearitem()
     frmbill.Scrolledtreeview1.delete(*frmbill.Scrolledtreeview1.get_children())
     g_total()
@@ -380,7 +392,7 @@ def g_total():
     for child in frmbill.Scrolledtreeview1.get_children():
         #print(frmbill.Scrolledtreeview1.item(child)["values"][7])
         g_total += float(frmbill.Scrolledtreeview1.item(child)["values"][7])
-    frmbill.labeltottxt['text']=str(g_total)
+    frmbill.labeltottxt['text']=float("{:.2f}".format(g_total))
 
 # btnnewbill
 # btnmodifybill
@@ -495,6 +507,7 @@ def additem():
                 frmbill.Scrolledtreeview1.item(slnoupd,values=values)
                 clearitem()
                 g_total()
+                psv_support.varcboitemtype.set("Material")
                 return True
         else:
             values=get_duple(frmbill)              
@@ -502,6 +515,7 @@ def additem():
             frmbill.Scrolledtreeview1.insert("",'end', iid=str(values[0]),text="L1",values=values)
             g_total()
             clearitem()
+            psv_support.varcboitemtype.set("Material")
     else:
         messagebox.showwarning("enter all details","Invalid item")
     
@@ -556,7 +570,8 @@ def printbill():
         messagebox.showwarning("Print","Save Invoice before print")
         
 
-connect('psv', alias='db1',username='psv',password='psv')  
+#connect('psv', alias='db1',username='psv',password='psv')  
+connect('psv', alias='db1',host='mongodb+srv://psv:psv@cluster0.npmrc.mongodb.net/psv?retryWrites=true&w=majority')
 
 def clearitem():
     frmbill.lblitemslno['text']=""

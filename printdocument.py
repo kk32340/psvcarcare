@@ -8,9 +8,7 @@ def getdocument(details):
     <head>        
     </head>
     <body>
-
-        <table width="100%">
-       
+        <table width="100%">       
         <tr> 
             <th width="70%" align="left">PSP CAR CARE</th>
             <th width="30%" rowspan="3" align="left">
@@ -41,33 +39,29 @@ def getdocument(details):
                 <h3>RETAIL CASH BILL</h3>
             </th>
         </tr>
-
         <tr> 
             <th width="70%"  align="left">{details.custname}</th>
             <th width="30%"  align="left">{details.vehicleno}</th>
         </tr>
-
         <tr> 
             <th width="70%"  align="left">{details.custadd}</th>
             <th width="30%"  align="left">{details.vehicleinfo}</th>
         </tr>
-
         <tr> 
             <th width="70%"  align="left">{details.mobileno}</th>
             <th width="30%"  align="left">{details.kilometer}</th>
         </tr>
     </table>
-    """
-    
+    """    
 
     bill = bill.replace("{details.invoiceno}","INVOICE NO:" + details.invoiceno)
-    bill = bill.replace("{details.date_modified}","INVOICEDATE:" + details.date_modified.strftime("%m/%d/%Y"))
+    bill = bill.replace("{details.date_modified}","INVOICEDATE:" + details.date_modified.strftime("%d/%m/%Y")) if details.date_modified !=None else ""
     bill = bill.replace("{details.custname}","CUSTOMER NAME: "+details.custname)
     bill = bill.replace("{details.vehicleno}","VEHICLE REG. No:" + details.vehicleno)
     bill = bill.replace("{details.custadd}","ADDRESS: "+details.custadd)
     bill = bill.replace("{details.vehicleinfo}","MAKE / MODEL:" + details.vehicleinfo)
     bill = bill.replace("{details.mobileno}","PHONE NO.: "+details.mobileno)
-    bill = bill.replace("{details.kilometer}","KILO METER:" + details.kilometer)
+    bill = bill.replace("{details.kilometer}","KILO METER:" + details.kilometer if details.kilometer !=None else "")
 
 
     bill2="""
@@ -89,9 +83,8 @@ def getdocument(details):
             <th colspan='17' width='100%' style="border-bottom-style: solid;border-width: 1px;">
             </th>
         </tr>
-    """  
+    """
 
-    
     gtotal=0
     material_item_index=0
     htmlstr=""
@@ -161,7 +154,6 @@ def getdocument(details):
     # f = open("test1.html", "a")
     # f.write(returnstr)
     # f.close()
-
 
     return returnstr
 
