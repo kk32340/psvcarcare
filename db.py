@@ -4,7 +4,8 @@ from tkinter import messagebox
 import re
 from datetime import datetime
 
-connect('psv', alias='db1',username='psv',password='psv')
+#connect('psv', alias='db1',username='psv',password='psv')
+connect('psv', alias='db1',host='mongodb+srv://psv:psv@cluster0.npmrc.mongodb.net/psv?retryWrites=true&w=majority')
 
 class item(Document):
     itemno = StringField(primary_key=True)
