@@ -212,7 +212,7 @@ def updateUIAttributes(top, root):
     frmbill.cbouom.bind("<Return>", lambda event, obj=frmbill.cbouom: widget_return(event,obj))
     frmbill.cbouom.bind("<Tab>", lambda event, obj=frmbill.txtqty: focus_next_widget(event, obj)) 
     frmbill.cbouom.configure(textvariable=psv_support.varcbouom)
-    uom_value_list = ['NOS','LTR']
+    uom_value_list = ['NOS','LTR','ML','MTR']
     frmbill.cbouom.configure(values=uom_value_list)
     frmbill.cbouom.configure(state='readonly')
 
@@ -448,7 +448,7 @@ def update_treevie():
 def additem():
     itemname=frmbill.cboitemname.get_value()
     if len(itemname) > 0:
-        item_db = item.objects(itemname=itemname)
+        item_db = item.objects(itemname__iexact=itemname)
         if len(item_db) <=0:        
             if messagebox.askyesno("New Item","Item does not exists.\nDo you want to create new item?"):
                 price_str = frmbill.txtprice.get('1.0','end-1c')
@@ -570,8 +570,8 @@ def printbill():
         messagebox.showwarning("Print","Save Invoice before print")
         
 
-#connect('psv', alias='db1',username='psv',password='psv')  
-connect('psv', alias='db1',host='mongodb+srv://psv:psv@cluster0.npmrc.mongodb.net/psv?retryWrites=true&w=majority')
+connect('psv', alias='db1',username='psv',password='psv')  
+#connect('psv', alias='db1',host='mongodb+srv://psv:psv@cluster0.npmrc.mongodb.net/psv?retryWrites=true&w=majority')
 
 def clearitem():
     frmbill.lblitemslno['text']=""
