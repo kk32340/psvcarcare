@@ -136,6 +136,7 @@ restore:
 mongorestore dump-2013-10-25/
 Note : Here, mongorestore imports the database backup in the dump-2013-10-25 directory to the mongod instance running on the localhost interface on the default port 27017.
 
+mongorestore --port 27017 --db "psv" "MongoDb Backup/" --drop
 
 convert .py to exe:
 -------------------
